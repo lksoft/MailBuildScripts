@@ -32,7 +32,7 @@ if [ $CONFIGURATION == "Release" ]; then
 fi
 
 # don't do anyting if mail is running
-MYVAR=`osascript "$SRCROOT/$PRODUCT_NAME/Project/EnsureMailTest.scpt"`
+MYVAR=`osascript "$SRCROOT/../MailBuildScripts/EnsureMailTest.scpt"`
 if [ $MYVAR == "-1" ]; then
 	echo "Mail is Running, won't replace plugin"
 	exit 0
