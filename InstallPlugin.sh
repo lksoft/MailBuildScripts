@@ -18,11 +18,11 @@ PUB_DIR="$HOME/Dropbox/MailBundles"
 # Make sure that the Dropbox folder is there
 if [ -d $PUB_DIR ]; then
 
-# delete any previous version
-rm -Rf "$PUB_DIR/$PRODUCT_NAME.$WRAPPER_EXTENSION"
+	# delete any previous version
+	rm -Rf "$PUB_DIR/$PRODUCT_NAME.$WRAPPER_EXTENSION"
 
-# copy the bundle
-cp -Rf "$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.$WRAPPER_EXTENSION" "$PUB_DIR"
+	# copy the bundle
+	cp -Rf "$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.$WRAPPER_EXTENSION" "$PUB_DIR"
 
 fi
 
