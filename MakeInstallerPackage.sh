@@ -19,7 +19,7 @@ export MY_RELEASE_FOLDER="$SRCROOT/../Releases"
 export MY_PREP_DIR="$MY_RELEASE_FOLDER/$REAL_PRODUCT"
 
 # Ensure that the installation directory exists, if not use without the REAL_PRODUCT name
-if [[ ! -e $MY_SOURCE_INSTALLATION_FILE ]]; then
+if [[ ! -e $MY_SOURCE_INSTALLATION_DIR ]]; then
 	export MY_SOURCE_INSTALLATION_DIR="$SRCROOT/Installation"
 fi
 
