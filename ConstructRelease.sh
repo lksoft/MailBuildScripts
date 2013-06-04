@@ -17,6 +17,11 @@ export MY_RELEASE_FOLDER="$SRCROOT/../Releases"
 export MY_PRODUCT_NEW_NAME="$REAL_PRODUCT.New"
 export MY_PRODUCT_VERSIONED_NAME="$REAL_PRODUCT.$VERSION_STRING"
 
+# Ensure that the installation directory exists, if not use without the REAL_PRODUCT name
+if [[ ! -e $MY_SOURCE_INSTALLATION_FILE ]]; then
+	export MY_SOURCE_INSTALLATION_DIR="$SRCROOT/Installation"
+fi
+
 echo "Creating the zip file for Sparkle"
 
 cd "$BUILT_PRODUCTS_DIR"
