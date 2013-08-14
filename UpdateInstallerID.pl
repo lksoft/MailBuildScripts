@@ -22,7 +22,7 @@ print "Info File:$INFO_FILE\n";
 my $info = `plutil -convert xml1 -o - "$INFO_FILE"`;
 
 # replace both the branch name and the hash value
-$info =~ s/REPLACESUBID/$NEW_ID/;
+$info =~ s/REPLACESUBID/$NEW_ID/g;
 
 # Rewrite the contents to the file
 open(FH, ">$INFO_FILE") or die "$0: $INFO_FILE: $!";
@@ -31,3 +31,8 @@ close(FH);
 
 # Rest the contents of the file to the binary version
 `plutil -convert binary1 "$INFO_FILE"`;
+
+# Also rename the actual helper file inside the Installer
+my $HELPER_BASE = "com.littleknownsoftware.MPC.CopyMoveHelper";
+my $HELPER_FOLDER = "$ENV{BUILT_PRODUCTS_DIR}/Plugin Installer.app/Contents/Library/LaunchServices";
+`mv "$HELPER_FOLDER/$HELPER_BASE" "$HELPER_FOLDER/$HELPER_BASE.$NEW_ID"`;
