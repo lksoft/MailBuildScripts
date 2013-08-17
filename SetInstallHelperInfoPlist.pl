@@ -5,7 +5,6 @@ use strict;
 die "$0: Must be run from Xcode" unless $ENV{"BUILT_PRODUCTS_DIR"};
 
 # Ensure that the proper values have been setup
-die "No installation sub id found for project [INSTALLER_SUB_ID]" unless $ENV{"INSTALLER_SUB_ID"};
 die "No Codesign identity found" unless $ENV{"CODE_SIGN_IDENTITY"};
 die "The Root Helper folder was not found [COPY_MOVE_DIR]" unless $ENV{"COPY_MOVE_DIR"};
 
@@ -18,24 +17,11 @@ my $INFO_DEST = "$ENV{COPY_MOVE_DIR}/CopyMoveHelperFixed-Info.plist";
 my $info = `plutil -convert xml1 -o - "$INFO_SOURCE"`;
 
 # replace both the branch name and the hash value
-$info =~ s/REPLACESUBID/$ENV{"INSTALLER_SUB_ID"}/g;
-$info =~ s/CODESIGNID/$ENV{"CODE_SIGN_IDENTITY"}/;
+$info =~ s/CODESIGNID/$ENV{"CODE_SIGN_IDENTITY"}/g;
+$info =~ s/BUILD_NUMBER/$ENV{"BUILD_NUMBER"}/g;
 
 # Rewrite the contents to the file
 open(FH, ">$INFO_DEST") or die "$0: $INFO_DEST: $!";
 print FH $info;
 close(FH);
 
-my $LAUNCHD_SOURCE = "$ENV{COPY_MOVE_DIR}/CopyMoveHelper-Launchd.plist";
-my $LAUNCHD_DEST = "$ENV{COPY_MOVE_DIR}/CopyMoveHelperFixed-Launchd.plist";
-
-# Get the contents as an XML format
-my $info = `plutil -convert xml1 -o - "$LAUNCHD_SOURCE"`;
-
-# replace both the branch name and the hash value
-$info =~ s/REPLACESUBID/$ENV{"INSTALLER_SUB_ID"}/g;
-
-# Rewrite the contents to the file
-open(FH, ">$LAUNCHD_DEST") or die "$0: $LAUNCHD_DEST: $!";
-print FH $info;
-close(FH);

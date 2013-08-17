@@ -32,7 +32,3 @@ close(FH);
 # Rest the contents of the file to the binary version
 `plutil -convert binary1 "$INFO_FILE"`;
 
-# Also rename the actual helper file inside the Installer
-my $HELPER_BASE = "com.littleknownsoftware.MPC.CopyMoveHelper";
-my $HELPER_FOLDER = "$ENV{BUILT_PRODUCTS_DIR}/Plugin Installer.app/Contents/Library/LaunchServices";
-`mv "$HELPER_FOLDER/$HELPER_BASE" "$HELPER_FOLDER/$HELPER_BASE.$NEW_ID"`;
