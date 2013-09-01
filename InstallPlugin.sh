@@ -14,6 +14,7 @@ echo 'Action is: '$ACTION
 echo 'Copying plugin to Public directory...'
 
 PUB_DIR="$HOME/Dropbox/MailBundles"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Make sure that the Dropbox folder is there
 if [ -d $PUB_DIR ]; then
@@ -32,7 +33,7 @@ if [ $CONFIGURATION == "Release" ]; then
 fi
 
 # don't do anyting if mail is running
-MYVAR=`osascript "$SRCROOT/../MailBuildScripts/EnsureMailTest.scpt"`
+MYVAR=`osascript "$SCRIPT_DIR/EnsureMailTest.scpt"`
 if [ $MYVAR == "-1" ]; then
 	echo "Mail is Running, won't replace plugin"
 	exit 0
