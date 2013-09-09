@@ -24,7 +24,11 @@ $SHAHASH =~ s/^\*\s([^\s]+)(\s+)([0-9a-f]+)[^\$]*/$3/;
 
 # trim the ends
 $BRANCH =~ s/^\s+//;
+$BRANCH =~ s/\s+$//;
 $SHAHASH =~ s/^\s+//;
+$SHAHASH =~ s/\s+$//;
+$GIT_VERSION =~ s/^\s+//;
+$GIT_VERSION =~ s/\s+$//;
 
 die "$0: No git branch found" unless $BRANCH;
 
@@ -34,6 +38,7 @@ my $info = `plutil -convert xml1 -o - "$INFO"`;
 # replace both the branch name and the hash value
 $info =~ s/\[BRANCH\]/$BRANCH/;
 $info =~ s/\[SHA-HASH\]/$SHAHASH/;
+$info =~ s/\[GIT-BUILD-COUNT\]/$GIT_VERSION/;
 
 # Rewrite the contents to the file
 open(FH, ">$INFO") or die "$0: $INFO: $!";
