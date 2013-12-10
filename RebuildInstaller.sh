@@ -17,6 +17,7 @@ export MY_UNINSTALLER="Uninstall $REAL_PRODUCT"
 export MY_UNINSTALLER_FILE="Uninstall $REAL_PRODUCT.mpremove"
 export MY_RELEASE_FOLDER="$SRCROOT/../Releases"
 export MY_PREP_DIR="$MY_RELEASE_FOLDER/$REAL_PRODUCT"
+export MPM_PUBLIC_EXEC_FOLDER="$SRCROOT/../MPMPublic/Releases"
 
 # Ensure that the installation directory exists, if not use without the REAL_PRODUCT name
 if [[ ! -e $MY_SOURCE_INSTALLATION_DIR ]]; then
@@ -29,10 +30,27 @@ export MY_INSTALLER_APP="Open to Install $REAL_PRODUCT.app"
 cd "$MY_PREP_DIR"
 
 # Copy the Installer with a new name
-cp -R "$BUILT_PRODUCTS_DIR/Plugin Installer.app" "$MY_INSTALLER_APP"
+cp -R "$MPM_PUBLIC_EXEC_FOLDER/Plugin Installer.app" "$MY_INSTALLER_APP"
 
 # Copy the Icons in
 cp "$BUILT_PRODUCTS_DIR/$REAL_PRODUCT.mailbundle/Contents/Resources/$REAL_PRODUCT.icns" "$MY_INSTALLER_APP/Contents/Resources/ManagerIcons.icns"
+
+# Set the proper Bundle ID for the installer
+export INFO_FILE="$MY_INSTALLER_APP/Contents/Info.plist"
+
+# Convert the plist to a temp xml file
+plutil -convert xml1 -o "temp.plist" "$INFO_FILE"
+
+# Replace the subid & delete first version
+sed -e "s/REPLACESUBID/$INSTALLER_SUB_ID/g" temp.plist > temp2.plist
+rm temp.plist
+# Replace the installer name & delete second version
+sed -e "s/INSTALLERBUNDLENAME/$INSTALLER_BUNDLE_NAME/g" temp2.plist > temp.plist
+rm temp2.plist
+
+# Rewrite the contents of the file to the binary version
+plutil -convert binary1 -o "$INFO_FILE" temp.plist
+rm temp.plist
 
 # Move to the Delivery Folder
 cd "$MY_INSTALLER_APP/Delivery"
@@ -42,7 +60,7 @@ echo "Deleting anything in $MY_INSTALLER_APP/Delivery"
 rm -Rf *
 
 # Copy stuff into the Delivery folder
-cp -Rf "$BUILT_PRODUCTS_DIR/Mail Plugin Manager.app" "."
+cp -Rf "$MPM_PUBLIC_EXEC_FOLDER/Mail Plugin Manager.app" "."
 mv -f "$MY_PREP_DIR/$MY_INSTALLER_FILE" "."
 
 # Resign it
