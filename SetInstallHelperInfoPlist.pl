@@ -9,6 +9,7 @@ die "No Codesign identity found" unless $ENV{"CODE_SIGN_IDENTITY"};
 
 # Get the current git branch and sha hash
 # 	to use them to set the CFBundleVersion value
+my $GIT_VERSION = `git log --pretty=format:'' | wc -l | sed 's/[ \t]//g'`;
 my $INFO_SOURCE = "$ENV{SRCROOT}/CopyMoveHelper/CopyMoveHelper-Info.plist";
 my $INFO_DEST = "$ENV{SRCROOT}/CopyMoveHelper/CopyMoveHelperFixed-Info.plist";
 
@@ -17,7 +18,7 @@ my $info = `plutil -convert xml1 -o - "$INFO_SOURCE"`;
 
 # replace both the branch name and the hash value
 $info =~ s/CODESIGNID/$ENV{"CODE_SIGN_IDENTITY"}/g;
-$info =~ s/BUILD_NUMBER/$ENV{"BUILD_NUMBER"}/g;
+$info =~ s/\[GIT-BUILD-COUNT\]/$GIT_VERSION/g;
 
 # Rewrite the contents to the file
 open(FH, ">$INFO_DEST") or die "$0: $INFO_DEST: $!";
