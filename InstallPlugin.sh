@@ -13,7 +13,7 @@ echo 'Action is: '$ACTION
 
 echo 'Copying plugin to Public directory...'
 
-PUB_DIR="$HOME/Dropbox/MailBundles"
+PUB_DIR="$HOME/Projects/Built"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Make sure that the Dropbox folder is there
