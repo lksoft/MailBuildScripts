@@ -8,11 +8,18 @@
 
 use strict;
 
+# Only do this if we have a final build indicator
+if (not exists($ENV{"PUBLISH_BUILD"})) {
+	print "Not making final build yet – skipping";
+	return;
+}
+
 my $productCode;
 my $productName;
 my $versionString;
 my $extraReleasePathValue = "";
 my $packageExtension = ".dmg";
+my $dmgFilePath;
 
 if ($ENV{"MAIN_PRODUCT_NAME"}) {
 	$productName = $ENV{"MAIN_PRODUCT_NAME"};
@@ -27,6 +34,7 @@ if ($ENV{"MAIN_PRODUCT_NAME"}) {
 	if ($ENV{"PACKAGE_EXTENSION"}) {
 		$packageExtension = $ENV{"PACKAGE_EXTENSION"};
 	}
+	$dmgFilePath = $ENV{"SRCROOT"} . "/.." . $extraReleasePathValue . "/Releases/" . $productName . "." . $versionString . $packageExtension;
 }
 else {	#	For Command Line Testing purposes only!
 	$productCode = $ARGV[0];
@@ -40,21 +48,12 @@ else {	#	For Command Line Testing purposes only!
 		$extraReleasePathValue = "/MPMPublic";
 		$packageExtension = ".tar.bz2";
 	}
-}
-
-my $prodDir;
-my $dmgFilePath;
-
-if ($ENV{"BUILT_PRODUCTS_DIR"}) {
-	$prodDir = $ENV{"BUILT_PRODUCTS_DIR"};
-	$dmgFilePath = $ENV{"SRCROOT"} . "/.." . $extraReleasePathValue . "/Releases/" . $productName . "." . $versionString . $packageExtension;
-}
-else {
-	$prodDir = "/Users/scott/Sites/lksite/source/services/config";
 	$dmgFilePath = "/Users/scott/Projects/Littleknown/" . $productName . $extraReleasePathValue . "/Releases/" . $productName . "." . $versionString . $packageExtension;
 }
 
-my $versionDir = $prodDir . "/version-info/" . $productCode;
+my $configDir = "/Users/scott/Sites/lksite/source/services/config";
+
+my $versionDir = $configDir . "/version-info/" . $productCode;
 my @fileList;
 opendir(DIR, $versionDir) or die "Couldn't open folder for $productCode: $!";
 while (defined(my $aFile = readdir(DIR))) {
@@ -85,7 +84,7 @@ $dmgSize =~ s/^([^ ]+)( +)([^ ]+)( +)([0-9]+)( +)([0-9]+)( +)([^ ]+)( +).+$/$9/g
 $dmgSize = sprintf("%.1f", $dmgSize / (1024 * 1024));
 
 # Get the contents as an XML format
-my $templatePath = $prodDir . "/version-info/" . $productCode . "-template.json";
+my $templatePath = $configDir . "/version-info/" . $productCode . "-template.json";
 my $template = do {
 	local $/ = undef;
 	open my $fh, "<", $templatePath
@@ -95,9 +94,9 @@ my $template = do {
 
 # replace both the file size and the new contents
 $template =~ s/__DMG_FILE_SIZE_IN_MB__/$dmgSize/;
-$template =~ s/\__NEW_VERSION_INFO_LIST__/$versionFileContents/;
+$template =~ s/__NEW_VERSION_INFO_LIST__/$versionFileContents/;
 
-my $finalJSONFile = $prodDir . "/version-info/" . $productCode . ".json";
+my $finalJSONFile = $configDir . $productCode . ".json";
 # Rewrite the contents to the file
 do {
 	open my $fh, ">", $finalJSONFile
