@@ -9,6 +9,12 @@
 use strict;
 use Cwd;
 
+# Only do this if we have a final build indicator
+if ($ENV{"PRODUCT_NAME"} eq "Publish Build") {
+	print "Not making final build yet – skipping";
+	return;
+}
+
 my $productCode;
 my $productName;
 my $versionString;

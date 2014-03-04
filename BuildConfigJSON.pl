@@ -9,7 +9,7 @@
 use strict;
 
 # Only do this if we have a final build indicator
-if (not exists($ENV{"PUBLISH_BUILD"})) {
+if ($ENV{"PRODUCT_NAME"} eq "Publish Build") {
 	print "Not making final build yet – skipping";
 	return;
 }
