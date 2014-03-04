@@ -9,7 +9,7 @@
 use strict;
 
 # Only do this if we have a final build indicator
-if ($ENV{"PRODUCT_NAME"} eq "Publish Build") {
+if ($ENV{"PRODUCT_NAME"} ne "Publish Build") {
 	print "Not making final build yet – skipping";
 	return;
 }
@@ -93,10 +93,11 @@ my $template = do {
 };
 
 # replace both the file size and the new contents
+$template =~ s/__PRODUCT_CODE__/$productCode/;
 $template =~ s/__DMG_FILE_SIZE_IN_MB__/$dmgSize/;
 $template =~ s/__NEW_VERSION_INFO_LIST__/$versionFileContents/;
 
-my $finalJSONFile = $configDir . $productCode . ".json";
+my $finalJSONFile = $configDir . "/" . $productCode . ".json";
 # Rewrite the contents to the file
 do {
 	open my $fh, ">", $finalJSONFile

@@ -7,10 +7,10 @@
 #  Copyright (c) 2014 Little Known Software. All rights reserved.
 
 use strict;
-use Cwd;
+use Cwd qw/abs_path/;
 
 # Only do this if we have a final build indicator
-if ($ENV{"PRODUCT_NAME"} eq "Publish Build") {
+if ($ENV{"PRODUCT_NAME"} ne "Publish Build") {
 	print "Not making final build yet – skipping";
 	return;
 }
@@ -21,7 +21,8 @@ my $versionString;
 my $extraReleasePathValue = "";
 my $tarFilePath;
 my $repoDirectory;
-my $signingScriptPath = cwd() . "/sign_update.rb";
+my ($realPath) = abs_path($0) =~ m/(.*)AddJSONConfig.pl/i;
+my $signingScriptPath = $realPath . "sign_update.rb";
 my $privateKeyPath = "";
 
 if ($ENV{"MAIN_PRODUCT_NAME"}) {
@@ -61,7 +62,7 @@ else {	#	For Command Line Testing purposes only!
 }
 
 if ($privateKeyPath ne "") {
-	die "$0: The Private key for the Sparkle signature is not available." unless -f $privateKeyPath;
+	die "The Private key for the Sparkle signature is not available.\nPath: $privateKeyPath" unless -f $privateKeyPath;
 }
 
 my $configDir = "/Users/scott/Sites/lksite/source/services/config";
@@ -106,7 +107,7 @@ my $startLine = "\n";
 foreach my $aLine (split /\n/, $commitHistory) {
 	if ($aLine =~ m/$commitPattern/i) {
 		my @values = $aLine =~ m/$commitPattern/i;
-		$versionFileContents .= $startLine . '            {"type":"' . lc($values[0]) . '","description":"' . $values[1] . '"}';
+		$versionFileContents .= $startLine . '            {"type":"' . lc($values[0]) . '","description":"' . $values[2] . '"}';
 		$startLine = ",\n";
 	}
 }
