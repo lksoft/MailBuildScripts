@@ -10,7 +10,7 @@ use strict;
 use Cwd qw/abs_path/;
 
 # Only do this if we have a final build indicator
-if ($ENV{"PRODUCT_NAME"} ne "Publish Build") {
+if ($ENV{"PRODUCT_NAME"} and ($ENV{"PRODUCT_NAME"} ne "Publish Build")) {
 	print "Not making final build yet – skipping";
 	return;
 }
