@@ -8,22 +8,9 @@
 
 # Run script to show line count in Notifications
 
-MY_APP_DIR="${LOCAL_APPS_DIR}"
-if [[ -d "${LOCAL_APPS_DIR}/Non-Store" ]]; then
-	MY_APP_DIR="${LOCAL_APPS_DIR}/Non-Store"
-fi
-if [[ -d "${LOCAL_APPS_DIR}/Local" ]]; then
-	MY_APP_DIR="${LOCAL_APPS_DIR}/Local"
-fi
-
 LINE_COUNT=`find "${SRCROOT}" -name "*.m" -print0 | xargs -0 cat | wc -l`
-
 MY_TEXT="Total source code lines: $LINE_COUNT"
+MY_TITLE="XCode Build Line Count"
 
-if [[ -d "${MY_APP_DIR}/terminal-notifier.app" ]]; then
-	"${MY_APP_DIR}/terminal-notifier.app/Contents/MacOS/terminal-notifier" -message "" -title "XCode Build Line Count" -subtitle "$MY_TEXT" -group linecount
-else
-	echo "$MY_TEXT"
-fi
-
-
+MY_DIR=`dirname ${0}`
+"$MY_DIR/ShowNotificationDisplay.sh" "$MY_TITLE" "$MY_TEXT" "linecount"

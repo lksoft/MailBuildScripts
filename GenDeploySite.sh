@@ -6,13 +6,17 @@
 #  Created by Scott Little on 6/3/2014.
 #  Copyright (c) 2013 Little Known Software. All rights reserved.
 
+source ~/.bash_profile
+
 if [[ -f "$SRCROOT/lksitedirty.flag" ]]; then
     echo "Not deploying LKSite!"
     exit 1;
 fi
 
-cd "/Users/scott/sites/lksite"
-echo "Generating LKSite"
-rake generate
-echo "Deploying LKSite"
-#rake deploy
+if [[ -d "/Users/scott/sites/lksite" ]]; then
+	cd "/Users/scott/sites/lksite"
+	echo "Generating LKSite"
+	rake -q generate
+	echo "Deploying LKSite"
+	rake -q deploy
+fi
