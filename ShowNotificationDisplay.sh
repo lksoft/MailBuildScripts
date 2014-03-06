@@ -18,7 +18,7 @@ GROUP_NAME="none"
 if [ "$#" == 3 ]; then
 	GROUP_NAME="$3"
 fi
-if [ "$#" > 1 ]; then
+if [ "$#" -gt 1 ]; then
 	TITLE="$1"
 	SUB_TITLE="$2"
 else
