@@ -56,6 +56,7 @@ if (opendir(DIR, $draftDir)) {
 			};
 			if ((defined $postContents) && ($postContents ne "")) {
 				unlink($draftDir . $aFile);
+				last;
 			}
 		}
 	}
@@ -86,6 +87,7 @@ if (opendir(DIR, $JSONFileDIR)) {
 					or die "Could not open $aFile for reading: $!";
 				<$fh>;
 			};
+			last;
 		}
 	}
 	closedir(DIR);
