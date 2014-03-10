@@ -42,10 +42,6 @@ if ($argCount > $argParseStart) {
 		if (lc($ARGV[$argParseStart]) eq "yes") {
 			$shouldRetweet = 1;
 		}
-		$argParseStart++;
-	}
-	if ($argCount > $argParseStart) {
-		$postPath = $ARGV[$argParseStart];
 	}
 }
 
@@ -70,6 +66,20 @@ my $accountInfo = `cd $sitePath;twurl accounts`;
 if ($accountInfo !~ m/$accountName/) {
 	print "Account ‘$accountName’ not found in twurl or twurl not installed.\n";
 	exit 1;
+}
+
+#	See if there is a relevant blog post
+my $postDir = "/Users/scott/Sites/lksite/source/_posts/";
+(my $mappedVersion = $versionString) =~ s/\./-/g;
+if (opendir(DIR, $postDir)) {
+	while (defined(my $aFile = readdir(DIR))) {
+		if (($aFile =~ m/$productName/i) && ($aFile =~ m/$mappedVersion/i)) {
+			$postPath = $aFile;
+			$postPath =~ s/(.+).markdown/$1/;
+			last;
+		}
+	}
+	closedir(DIR);
 }
 
 #	Set the default account
