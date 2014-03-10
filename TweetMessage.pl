@@ -60,9 +60,10 @@ if (!($productCode ~~ @validCodes)) {
 
 my $sitePath = "/Users/scott/Sites/lksite/";
 my $accountName = $accountNames{$productCode};
+my $twurlCommand = "cd $sitePath;source ~/.bash_profile;twurl";
 
 #	Ensure that we really have an authorization for this account
-my $accountInfo = `cd $sitePath;twurl accounts`;
+my $accountInfo = `$twurlCommand accounts`;
 if ($accountInfo !~ m/$accountName/) {
 	print "Account ‘$accountName’ not found in twurl or twurl not installed.\n";
 	exit 1;
@@ -83,10 +84,10 @@ if (opendir(DIR, $postDir)) {
 }
 
 #	Set the default account
-`cd $sitePath;twurl set default $accountName`;
+`$twurlCommand set default $accountName`;
 
 #	Build our message content
-my $messageContent = "$productName has just been updated to version ‘$versionString’.";
+my $messageContent = "I have just been updated to version ‘$versionString’.";
 if ($postPath ne "") {
 	$messageContent .= " See this post about it => http://littleknownsoftware.com/blog/$postPath";
 }
@@ -96,11 +97,11 @@ else {
 
 #	Send our message
 print "Tweeting message\n";
-my $tweetResult = `cd $sitePath;twurl /1.1/statuses/update.json -d "status=$messageContent"`;
+my $tweetResult = `$twurlCommand /1.1/statuses/update.json -d "status=$messageContent"`;
 
 #	Ensure that we really have an authorization for this account
 my $lksAccount = "";
-$accountInfo = `cd $sitePath;twurl accounts`;
+$accountInfo = `$twurlCommand accounts`;
 if ($accountInfo =~ m/littleknown/) {
 	$lksAccount = "littleknown";
 }
@@ -112,9 +113,9 @@ if ($shouldRetweet && ($lksAccount ne "")) {
 		my $firstTweetId = $decoded->{"id_str"};
 		if ($firstTweetId ne "") {
 			#	Change account and retweet
-			`cd $sitePath;twurl set default $lksAccount`;
+			`$twurlCommand set default $lksAccount`;
 			print "Retweeting message: ‘$firstTweetId’\n";
-			`cd $sitePath;twurl /1.1/statuses/retweet/$firstTweetId.json`;
+			`$twurlCommand /1.1/statuses/retweet/$firstTweetId.json`;
 		}
 		else {
 			print "Didn't get the tweet ID I expected to retweet:‘$firstTweetId’.\n";
