@@ -76,7 +76,7 @@ if (opendir(DIR, $postDir)) {
 	while (defined(my $aFile = readdir(DIR))) {
 		if (($aFile =~ m/$productName/i) && ($aFile =~ m/$mappedVersion/i)) {
 			$postPath = $aFile;
-			$postPath =~ s/(.+).markdown/$1/;
+			$postPath =~ s|^([0-9]{4})-([0-9]{2})-([0-9]{2})-(.+).markdown$|$1/$2/$3/$4|;
 			last;
 		}
 	}
