@@ -57,4 +57,6 @@ echo "layout folder: $MY_SOURCE_INSTALLATION_DIR/$REAL_PRODUCT"
 dropdmg --layout-folder="$MY_SOURCE_INSTALLATION_DIR/$REAL_PRODUCT" --volume-name="$REAL_PRODUCT" "$MY_RELEASE_FOLDER/$REAL_PRODUCT"
 mv "$REAL_PRODUCT.dmg" "$MY_PRODUCT_VERSIONED_NAME.dmg"
 
+/usr/bin/osascript -e "tell application \"DropDMG\" to quit"
+
 exit 0

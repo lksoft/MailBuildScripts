@@ -66,3 +66,6 @@ mv -f "$MY_PREP_DIR/$MY_INSTALLER_FILE" "."
 # Resign it
 cd "$MY_PREP_DIR"
 codesign -f -s "Developer ID" -v "$MY_INSTALLER_APP"
+
+SetFile -a CBE "$MY_INSTALLER_APP"
+
