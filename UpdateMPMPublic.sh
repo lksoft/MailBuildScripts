@@ -35,17 +35,17 @@ fi
 cd "$MY_MPM_REPO"
 
 git checkout -q master
-BRANCH=`git status | grep "On branch" | cut -c 13-`
-IS_CLEAN=`git status | grep "nothing" | cut -c 1-17`
+BRANCH=`git rev-parse --abbrev-ref HEAD`
+IS_CLEAN=`git status --porcelain`
 if [ "$BRANCH" != "master" ]; then
 	echo "MPM Update Script ERROR - $MY_MPM_REPO_NAME needs to be on the master branch"
 	echo "Current branch is:'$BRANCH'"
 	echo "Clean status is:$IS_CLEAN"
 	exit 2
 fi
-if [[ -z $IS_CLEAN || "$IS_CLEAN" != "nothing to commit" ]]; then
+if [[ "$IS_CLEAN" != "" ]]; then
 	echo "MPM Update Script ERROR - $MY_MPM_REPO_NAME needs have a clean status"
-	echo "Clean status is:$IS_CLEAN"
+	echo "Clean status is:'$IS_CLEAN'"
 	exit 3
 fi
 git pull origin master
