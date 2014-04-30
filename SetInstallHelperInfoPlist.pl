@@ -18,10 +18,18 @@ my $INFO_DEST = "$ENV{SRCROOT}/CopyMoveHelper/CopyMoveHelperFixed-Info.plist";
 # Get the contents as an XML format
 my $info = `plutil -convert xml1 -o - "$INFO_SOURCE"`;
 
+# Always update the test client authorization
+my $testClient = "<string>identifier com.littleknownsoftware.MPI.REPLACESUBID and certificate leaf[subject.CN] = &quot;CODESIGNID&quot;</string>";
+unless ($ENV{"CONFIGURATION"} eq "DebugDevIDOwner") {
+	$testClient = "";
+}
+$info =~ s/<string>\[TEST_AUTH_CLIENT\]<\/string>/$testClient/g;
+
 unless ($ENV{"CONFIGURATION"} eq "Debug") {
 	# replace both the branch name and the hash value
 	$info =~ s/CODESIGNID/$ENV{"CODE_SIGN_IDENTITY"}/g;
 	$info =~ s/\[GIT-BUILD-COUNT\]/$GIT_VERSION/g;
+
 }
 
 # Rewrite the contents to the file
