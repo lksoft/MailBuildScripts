@@ -79,7 +79,7 @@ foreach my $aFile (@orderedFileList) {
 
 # Get the current build's DMG file Size in MB
 # 	to use them to set the CFBundleVersion value
-my $dmgSize = `ls -ln $dmgFilePath`;
+my $dmgSize = `ls -ln "$dmgFilePath"`;
 $dmgSize =~ s/^([^ ]+)( +)([^ ]+)( +)([0-9]+)( +)([0-9]+)( +)([^ ]+)( +).+$/$9/g;
 $dmgSize = sprintf("%.1f", $dmgSize / (1024 * 1024));
 
