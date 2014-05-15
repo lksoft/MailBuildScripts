@@ -49,7 +49,6 @@ if ($argCount > $argParseStart) {
 my %accountNames = (
 	"sis" => "TealeavesMail",
 	"sigpro" => "sigprofiler",
-	"test" => "wineglassapp",
 	"badtest" => "notthere"
 );
 my @validCodes = keys %accountNames;
