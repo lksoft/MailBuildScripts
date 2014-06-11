@@ -9,8 +9,7 @@
 # run script to copy the built bundle into the Install directory
 #	but only if it is a development build
 
-PUB_DIR="$HOME/Projects/Built"
-PUB_DIR2="$HOME/Projects/BuiltPlugins"
+PUB_DIR="$HOME/Dropbox/MailBundles"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 FULL_PRODUCT="$PRODUCT_NAME.$WRAPPER_EXTENSION"
@@ -26,26 +25,15 @@ echo 'Copying plugin to Public directories...'
 # Make sure that the Shared folders are there
 if [ -d "$PUB_DIR" ]; then
 
-	echo "Copying to $PUB_DIR"
+	echo "Copying tar file to $PUB_DIR"
 
+	cd "$BUILT_PRODUCTS_DIR"
+	
 	# delete any previous version
-	rm -Rf "$PUB_DIR/$FULL_PRODUCT"
+	rm -Rf "$PUB_DIR/$PRODUCT_NAME.tar"
 
 	# copy the bundle
-	cp -Rf "$SOURCE_PATH" "$PUB_DIR"
-
-fi
-
-# Make sure that the Shared folders are there
-if [ -d "$PUB_DIR2" ]; then
-
-	echo "Copying to $PUB_DIR2"
-
-	# delete any previous version
-	rm -Rf "$PUB_DIR2/$FULL_PRODUCT"
-
-	# copy the bundle
-	cp -Rf "$SOURCE_PATH" "$PUB_DIR2"
+	tar -cf "$PUB_DIR/$PRODUCT_NAME.tar" "$FULL_PRODUCT"
 
 fi
 
