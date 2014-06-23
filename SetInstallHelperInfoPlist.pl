@@ -15,6 +15,10 @@ my $GIT_VERSION = `git log --pretty=format:'' | wc -l | sed 's/[ \t]//g'`;
 my $INFO_SOURCE = "$ENV{SRCROOT}/CopyMoveHelper/CopyMoveHelper-Info.plist";
 my $INFO_DEST = "$ENV{SRCROOT}/CopyMoveHelper/CopyMoveHelperFixed-Info.plist";
 
+# Trim both sides
+$GIT_VERSION =~ s/^\s+//;
+$GIT_VERSION =~ s/\s+$//;
+
 # Get the contents as an XML format
 my $info = `plutil -convert xml1 -o - "$INFO_SOURCE"`;
 
