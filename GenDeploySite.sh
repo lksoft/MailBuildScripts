@@ -15,8 +15,6 @@ fi
 
 if [[ -d "/Users/scott/sites/lksite" ]]; then
 	cd "/Users/scott/sites/lksite"
-	echo "Generating LKSite"
-	rake -q generate
-	echo "Deploying LKSite"
-	rake -q deploy
+	echo "Generating and Deploying LKSite to Live"
+	rake -q gen_deploy_live
 fi
