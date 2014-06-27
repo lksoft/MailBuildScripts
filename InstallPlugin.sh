@@ -23,7 +23,7 @@ fi
 echo 'Copying plugin to Public directories...'
 
 # Make sure that the Shared folders are there
-if [ -d "$PUB_DIR" ]; then
+if [[ -d "$PUB_DIR" && ! -d "$HOME/Library/Mail/V2/IMAP-lksofttest@imap.gmail.com" ]]; then
 
 	echo "Copying tar file to $PUB_DIR"
 
