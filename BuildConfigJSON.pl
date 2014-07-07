@@ -64,7 +64,13 @@ while (defined(my $aFile = readdir(DIR))) {
 closedir(DIR);
 
 # Reverse sort file list
-my @orderedFileList = sort { $b cmp $a } @fileList;
+my @orderedFileList = sort { 
+	my @bBuildNum = split('-', $b);
+	my @aBuildNum = split('-', $a);
+	my $bValue = 0 + $bBuildNum[0];
+	my $aValue = 0 + $aBuildNum[0];
+	$bValue <=> $aValue;
+	} @fileList;
 # Get the contents of the files into a variable
 my $versionFileContents = "";
 foreach my $aFile (@orderedFileList) {
