@@ -70,7 +70,7 @@ if ($shouldFail != 0) {
 
 #	Now update master to the latest and make sure there were no issues
 print "Updating from Remote.\n";
-`cd $lksiteDir;git remote update`;
+`cd $lksiteDir;git remote update origin`;
 my $isAhead = `cd $lksiteDir;git status -s -u no`;
 if ( ! -z $isAhead ) {
 	print "Pulling into local master.\n";
