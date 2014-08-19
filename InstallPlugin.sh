@@ -37,7 +37,7 @@ if [[ -d "$PUB_DIR" && ! -d "$HOME/Library/Mail/V2/IMAP-lksofttest@imap.gmail.co
 
 fi
 
-if [ "$CONFIGURATION" == "Release" ]; then
+if [ "$CONFIGURATION" == Release* ]; then
 	exit 0
 fi
 
