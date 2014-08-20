@@ -20,7 +20,8 @@ my $argParseStart = 0;
 if ($ENV{"MAIN_PRODUCT_NAME"}) {
 	$productName = $ENV{"MAIN_PRODUCT_NAME"};
 	$productCode = $ENV{"PRODUCT_CODE"};
-	$versionString = $ENV{"VERSION_STRING"};
+	$versionString = `cat "$ENV{TEMP_VERSION_STRING_PATH}"`;
+
 }
 else {	#	For Command Line Testing purposes only!
 	$productCode = $ARGV[0];

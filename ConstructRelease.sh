@@ -11,10 +11,11 @@ if [ $CONFIGURATION != "Release" ]; then
 	exit "Can't build for Non-Deployment Style"
 fi
 
+export VERSION=`cat $TEMP_VERSION_STRING_PATH`
 export REAL_PRODUCT="$MAIN_PRODUCT_NAME"
 export MY_SOURCE_INSTALLATION_DIR="$SRCROOT/$REAL_PRODUCT/Installation"
 export MY_RELEASE_FOLDER="$SRCROOT/../Releases"
-export MY_PRODUCT_VERSIONED_NAME="$REAL_PRODUCT.$VERSION_STRING"
+export MY_PRODUCT_VERSIONED_NAME="$REAL_PRODUCT.$VERSION"
 
 # Ensure that the installation directory exists, if not use without the REAL_PRODUCT name
 if [[ ! -e $MY_SOURCE_INSTALLATION_DIR ]]; then

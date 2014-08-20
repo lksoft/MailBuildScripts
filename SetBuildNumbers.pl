@@ -18,6 +18,12 @@ my $SHAHASH = $GIT_INFO;
 my $GIT_VERSION = `git log --pretty=format:'' | wc -l | sed 's/[ \t]//g'`;
 my $INFO = "$ENV{BUILT_PRODUCTS_DIR}/$ENV{INFOPLIST_PATH}";
 
+my $baseDir = ".";
+if ($ENV{"SRCROOT"}) {
+	$baseDir = $ENV{"SRCROOT"};
+}
+my $NEW_VERSION = `cat "$ENV{TEMP_VERSION_STRING_PATH}"`;
+
 # Extract the branch and sha
 $BRANCH =~ s/^\*\s([^\s]+)(\s+)[^\$]*/$1/;
 $SHAHASH =~ s/^\*\s([^\s]+)(\s+)([0-9a-f]+)[^\$]*/$3/;
@@ -39,6 +45,7 @@ my $info = `plutil -convert xml1 -o - "$INFO"`;
 $info =~ s/\[BRANCH\]/$BRANCH/;
 $info =~ s/\[SHA-HASH\]/$SHAHASH/;
 $info =~ s/\[GIT-BUILD-COUNT\]/$GIT_VERSION/;
+$info =~ s/\[VERSION-WITH-BETA\]/$NEW_VERSION/;
 
 # Rewrite the contents to the file
 open(FH, ">$INFO") or die "$0: $INFO: $!";

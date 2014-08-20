@@ -31,7 +31,7 @@ if ($ENV{"MAIN_PRODUCT_NAME"}) {
 		$productName = $ENV{"COMPACT_PRODUCT_NAME"};
 	}
 	$productCode = $ENV{"PRODUCT_CODE"};
-	$versionString = $ENV{"VERSION_STRING"};
+	$versionString = `cat "$ENV{TEMP_VERSION_STRING_PATH}"`;
 	if ($ENV{"EXTRA_RELEASE_PATH"}) {
 		$extraReleasePathValue = $ENV{"EXTRA_RELEASE_PATH"};
 	}
