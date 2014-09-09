@@ -6,7 +6,7 @@
 #  Created by Scott Little on 4/6/13.
 #  Copyright (c) 2013 Little Known Software. All rights reserved.
 
-if [ $CONFIGURATION != "Release" ]; then
+if [[ "$CONFIGURATION" != Release* ]]; then
 	exit "Can't build for Non-Deployment Style"
 fi
 
@@ -52,12 +52,12 @@ rm temp2.plist
 plutil -convert binary1 -o "$INFO_FILE" temp.plist
 rm temp.plist
 
-# Move to the Delivery Folder
-cd "$MY_INSTALLER_APP/Delivery"
+# Move to the Resources Folder
+cd "$MY_INSTALLER_APP/Contents/Resources"
 
-# Delete anything in the Delivery folder
-echo "Deleting anything in $MY_INSTALLER_APP/Delivery"
-rm -Rf *
+# Delete installer files in the Resources folder
+echo "Deleting any un/installer files in $MY_INSTALLER_APP/Contents/Resources"
+rm -Rf *.mpinstall *.mpremove
 
 # Copy stuff into the Delivery folder
 cp -Rf "$MPM_PUBLIC_EXEC_FOLDER/Mail Plugin Manager.app" "."
@@ -65,7 +65,6 @@ mv -f "$MY_PREP_DIR/$MY_INSTALLER_FILE" "."
 
 # Resign it
 cd "$MY_PREP_DIR"
-codesign -f -s "Developer ID" -v "$MY_INSTALLER_APP"
-
 SetFile -a CBE "$MY_INSTALLER_APP"
+codesign -f -s "Developer ID" -v "$MY_INSTALLER_APP"
 

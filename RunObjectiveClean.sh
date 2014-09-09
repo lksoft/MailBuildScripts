@@ -11,7 +11,7 @@
 
 echo "Configuration is: $CONFIGURATION"
 
-if [[ "$CONFIGURATION" != "Release" ]]; then
+if [[ "$CONFIGURATION" != Release* ]]; then
 	echo "Skipping Objective-Clean step"
 	exit 0;
 fi

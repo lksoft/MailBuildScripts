@@ -6,7 +6,7 @@
 #  Created by Scott Little on 4/6/13.
 #  Copyright (c) 2013 Little Known Software. All rights reserved.
 
-if [ $CONFIGURATION != "Release" ]; then
+if [[ "$CONFIGURATION" != Release* ]]; then
 	exit "Can't build for Non-Deployment Style"
 fi
 
