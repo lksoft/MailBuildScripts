@@ -12,9 +12,8 @@ die "$0: Must be run from Xcode" unless $ENV{"BUILT_PRODUCTS_DIR"};
 
 # Get the current git branch and sha hash
 # 	to use them to set the CFBundleVersion value
-my $GIT_INFO = `git --work-tree="$ENV{PROJECT_DIR}" branch --abbrev=10 -v | grep '^*'`;
-my $BRANCH = $GIT_INFO;
-my $SHAHASH = $GIT_INFO;
+my $BRANCH=`git symbolic-ref --short -q HEAD`;
+my $SHAHASH=`git rev-parse --short HEAD`;
 my $GIT_VERSION = `git log --pretty=format:'' | wc -l | sed 's/[ \t]//g'`;
 my $INFO = "$ENV{BUILT_PRODUCTS_DIR}/$ENV{INFOPLIST_PATH}";
 
@@ -24,14 +23,8 @@ if ($ENV{"SRCROOT"}) {
 }
 my $NEW_VERSION = `cat "$ENV{TEMP_VERSION_STRING_PATH}"`;
 
-# Extract the branch and sha
-$BRANCH =~ s/^\*\s([^\s]+)(\s+)[^\$]*/$1/;
-$SHAHASH =~ s/^\*\s([^\s]+)(\s+)([0-9a-f]+)[^\$]*/$3/;
-
 # trim the ends
-$BRANCH =~ s/^\s+//;
 $BRANCH =~ s/\s+$//;
-$SHAHASH =~ s/^\s+//;
 $SHAHASH =~ s/\s+$//;
 $GIT_VERSION =~ s/^\s+//;
 $GIT_VERSION =~ s/\s+$//;
