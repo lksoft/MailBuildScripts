@@ -40,26 +40,15 @@ if ( -f $flagFilePath ) {
 }
 
 #	Check to see if current repo is dirty or not
+my $gitCommand = "/usr/local/bin/git";
 my $shouldFail = 0;
-my $testMaster = `cd $lksiteDir;git rev-parse --abbrev-ref HEAD`;
-my $testClean = `cd $lksiteDir;git status --porcelain`;
+my $testMaster = `cd $lksiteDir;$gitCommand rev-parse --abbrev-ref HEAD`;
+my $testClean = `cd $lksiteDir;$gitCommand status --porcelain`;
 $testMaster =~ s/^\s+|\s+$//g;
 $testClean =~ s/^\s+|\s+$//g;
 if ($testClean ne "") {
 	$shouldFail = 3;
 	print "LKSite repo branch [$testMaster] has uncommited/new files.\n";
-}
-
-#	Then check the repo directory to see if we are on master, change if we can
-if (($shouldFail == 0) and ($testMaster ne "master")) {
-	print "Trying to change repo to master.\n";
-	`cd $lksiteDir;git checkout master`;
-	$testMaster = `cd $lksiteDir;git rev-parse --abbrev-ref HEAD`;
-	$testMaster =~ s/^\s+|\s+$//g;
-	if ($testMaster ne "master") {
-		$shouldFail = 4;
-		print "LKSite repo is not currently master => '$testMaster'.\n";
-	}
 }
 
 #	If we have an issue, write file and exit with error
@@ -68,13 +57,19 @@ if ($shouldFail != 0) {
 	exit $shouldFail;
 }
 
-#	Now update master to the latest and make sure there were no issues
-print "Updating from Remote.\n";
-`cd $lksiteDir;git remote update origin`;
-my $isAhead = `cd $lksiteDir;git status -s -u no`;
-if ( ! -z $isAhead ) {
-	print "Pulling into local master.\n";
-	`cd $lksiteDir;git pull origin`;
+#	Then try to make a new tag (via git flow)
+my $latestCurrentTag = `cd $lksiteDir;$gitCommand describe --tags --abbrev=0`;
+$latestCurrentTag =~ s/^tag+//g;
+my $newTag = 1 + $latestCurrentTag;
+print "Trying to create a new release branch with git-flow\n";
+`cd $lksiteDir;$gitCommand flow release start $newTag`;
+my $verifyTag = `cd $lksiteDir;$gitCommand rev-parse --abbrev-ref HEAD`;
+$verifyTag =~ s/^\s+|\s+$//g;
+my $shouldBeTag = "release/$newTag";
+if ($verifyTag ne $shouldBeTag) {
+	print "The release branch ($shouldBeTag) was not made correctly:($verifyTag)\n";
+	writeFlagFile($flagFilePath);
+	exit 4;
 }
 
 exit 0;

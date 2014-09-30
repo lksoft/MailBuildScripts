@@ -11,7 +11,7 @@ use strict;
 # Only do this if we have a final build indicator
 if ($ENV{"PRODUCT_NAME"} ne "Publish Build") {
 	print "Not making final build yet – skipping";
-	return;
+#	return;
 }
 
 my $productCode;

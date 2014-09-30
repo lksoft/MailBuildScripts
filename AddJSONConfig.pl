@@ -12,7 +12,7 @@ use Cwd qw/abs_path/;
 # Only do this if we have a final build indicator
 if ($ENV{"PRODUCT_NAME"} and ($ENV{"PRODUCT_NAME"} ne "Publish Build")) {
 	print "Not making final build yet – skipping";
-	return;
+#	return;
 }
 
 my $productCode;
@@ -80,13 +80,14 @@ my $templateContents = do {
 # Set our variables
 # Get the current build's tar file Size in MB
 # 	to use them to set the CFBundleVersion value
+my $gitCommand = "/usr/local/bin/git";
 my $tarFileSize = `ls -ln "$tarFilePath"`;
 $tarFileSize =~ s/^([^ ]+)( +)([^ ]+)( +)([0-9]+)( +)([0-9]+)( +)([^ ]+)( +).+$/$9/g;
 $tarFileSize =~ s/^\s+|\s+$//g;
 # Date and build number
 my $dateTime = `date "+%d %b %Y %H:%M:%S"`;
 $dateTime =~ s/^\s+|\s+$//g;
-my $buildNumber = `cd "$repoDirectory";git log --pretty=format:'' | wc -l | sed 's/[ \t]//g'`;
+my $buildNumber = `cd "$repoDirectory";$gitCommand log --pretty=format:'' | wc -l | sed 's/[ \t]//g'`;
 $buildNumber =~ s/^\s+|\s+$//g;
 # The hash for the sparkle thing
 my $sparkleHash = "";
@@ -98,10 +99,10 @@ if ($privateKeyPath ne "") {
 }
 
 my $versionFileContents = "";
-my $previousAndCurrentTags = `cd "$repoDirectory";git describe --tags \`cd "$repoDirectory";git rev-list --tags --abbrev=0 --max-count=2\` --abbrev=0`;
+my $previousAndCurrentTags = `cd "$repoDirectory";$gitCommand describe --tags \`cd "$repoDirectory";$gitCommand rev-list --tags --abbrev=0 --max-count=2\` --abbrev=0`;
 (my $previousTag = $previousAndCurrentTags) =~ s/^.+\n(.+)\s+/$1/g;
 (my $currentTag = $previousAndCurrentTags) =~ s/^(.+)\n(.+)\s+/$1/g;
-my $commitHistory = `cd "$repoDirectory";git log $previousTag..$currentTag --pretty=format:"%s"`;
+my $commitHistory = `cd "$repoDirectory";$gitCommand log $previousTag..$currentTag --pretty=format:"%s"`;
 my $commitPattern = "^\\[(new|os|fix)\\]([\\s-]*)(.+)\$";
 my $startLine = "\n";
 foreach my $aLine (split /\n/, $commitHistory) {
