@@ -41,14 +41,14 @@ if ( -f $flagFilePath ) {
 
 #	Check to see if current repo is dirty or not
 my $gitCommand = "/usr/local/bin/git";
+my $testCurrent = `cd $lksiteDir;$gitCommand rev-parse --abbrev-ref HEAD`;
 my $shouldFail = 0;
-my $testMaster = `cd $lksiteDir;$gitCommand rev-parse --abbrev-ref HEAD`;
 my $testClean = `cd $lksiteDir;$gitCommand status --porcelain`;
-$testMaster =~ s/^\s+|\s+$//g;
+$testCurrent =~ s/^\s+|\s+$//g;
 $testClean =~ s/^\s+|\s+$//g;
 if ($testClean ne "") {
 	$shouldFail = 3;
-	print "LKSite repo branch [$testMaster] has uncommited/new files.\n";
+	print "LKSite repo branch [$testCurrent] has uncommited/new files.\n";
 }
 
 #	If we have an issue, write file and exit with error
@@ -57,15 +57,23 @@ if ($shouldFail != 0) {
 	exit $shouldFail;
 }
 
-#	Then try to make a new tag (via git flow)
+#	Determine the next branch number
 my $latestCurrentTag = `cd $lksiteDir;$gitCommand describe --tags --abbrev=0`;
 $latestCurrentTag =~ s/^tag+//g;
 my $newTag = 1 + $latestCurrentTag;
+my $shouldBeTag = "release/$newTag";
+
+#	If the current branch is the next tag branch, then assume that it is the correct one.
+if ($testCurrent eq $shouldBeTag) {
+	print "Next tag is already created and checked out";
+	exit 0;
+}
+
+#	Otherwise try to make a new tag (via git flow)
 print "Trying to create a new release branch with git-flow\n";
 `cd $lksiteDir;$gitCommand flow release start $newTag`;
 my $verifyTag = `cd $lksiteDir;$gitCommand rev-parse --abbrev-ref HEAD`;
 $verifyTag =~ s/^\s+|\s+$//g;
-my $shouldBeTag = "release/$newTag";
 if ($verifyTag ne $shouldBeTag) {
 	print "The release branch ($shouldBeTag) was not made correctly:($verifyTag)\n";
 	writeFlagFile($flagFilePath);
