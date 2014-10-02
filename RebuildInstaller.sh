@@ -64,7 +64,7 @@ cp -Rf "$MPM_PUBLIC_EXEC_FOLDER/Mail Plugin Manager.app" "."
 mv -f "$MY_PREP_DIR/$MY_INSTALLER_FILE" "."
 
 # If there is a Delivery Folder Path, the copy it's contents as well
-if [[ "$DELIVERY_ITEMS_FOLDER2" != "" ]]; then
+if [[ "$DELIVERY_ITEMS_FOLDER" != "" ]]; then
 	echo "Copying other delivery items…"
 	cp -Rf "$DELIVERY_ITEMS_FOLDER/"* "./$MY_INSTALLER_FILE"
 else
