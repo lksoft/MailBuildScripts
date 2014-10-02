@@ -63,6 +63,14 @@ rm -Rf *.mpinstall *.mpremove
 cp -Rf "$MPM_PUBLIC_EXEC_FOLDER/Mail Plugin Manager.app" "."
 mv -f "$MY_PREP_DIR/$MY_INSTALLER_FILE" "."
 
+# If there is a Delivery Folder Path, the copy it's contents as well
+if [[ "$DELIVERY_ITEMS_FOLDER2" != "" ]]; then
+	echo "Copying other delivery items…"
+	cp -Rf "$DELIVERY_ITEMS_FOLDER/"* "./$MY_INSTALLER_FILE"
+else
+	echo "No other delivery items found"
+fi
+
 # Resign it
 cd "$MY_PREP_DIR"
 SetFile -a CBE "$MY_INSTALLER_APP"
