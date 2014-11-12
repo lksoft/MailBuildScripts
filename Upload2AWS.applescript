@@ -33,7 +33,8 @@ on run (argv)
 		end if
 		
 		set myFav to item 1 of (favorites whose name is "AWS")
-		tell current tab of document 1
+		set myNewDoc to make new document
+		tell current tab of myNewDoc
 			
 			--	If there is a remote browser open, ensure that it is the AWS one
 			set aRemote to remote browser
@@ -60,13 +61,10 @@ on run (argv)
 				end timeout
 			end tell
 			
-			--	Handle the remote wondow as needed
-			if (shouldClose) then
-				close remote browser
-			else
-				--	Set the window if we are staying open
-				change location of remote browser to path destination
-			end if
+			--	Close the connection and the document
+			close remote browser
+			close myNewDoc
+			
 		end tell
 		
 	end tell
