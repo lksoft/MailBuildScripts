@@ -67,7 +67,7 @@ mv -f "$MY_PREP_DIR/$MY_INSTALLER_FILE" "."
 # If there is a Delivery Folder Path, the copy it's contents as well
 if [[ "$DELIVERY_ITEMS_FOLDER" != "" ]]; then
 	echo "Copying other delivery items…"
-	cp -Rf "$DELIVERY_ITEMS_FOLDER/"* "./$MY_INSTALLER_FILE"
+	cp -RfL "$DELIVERY_ITEMS_FOLDER/"* "./$MY_INSTALLER_FILE"
 else
 	echo "No other delivery items found"
 fi
