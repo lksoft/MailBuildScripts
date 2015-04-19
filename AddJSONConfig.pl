@@ -10,9 +10,14 @@ use strict;
 use Cwd qw/abs_path/;
 
 # Only do this if we have a final build indicator
-if ($ENV{"PRODUCT_NAME"} and ($ENV{"PRODUCT_NAME"} ne "Publish Build")) {
-	print "Not making final build yet – skipping";
-#	return;
+if ($ENV{"PRODUCT_NAME"}) {
+ 	if ((!$ARGV[0] or ($ARGV[0] ne "build_test")) and ($ENV{"PRODUCT_NAME"} ne "Publish Build")) {
+		print "Not making final build yet – skipping";
+		exit;
+	}
+	elsif ($ARGV[0] eq "build_test") {
+		print "Creating JSON Config for build test!";
+	}
 }
 
 my $productCode;
@@ -24,6 +29,7 @@ my $repoDirectory;
 my ($realPath) = abs_path($0) =~ m/(.*)AddJSONConfig.pl/i;
 my $signingScriptPath = $realPath . "sign_update.rb";
 my $privateKeyPath = "";
+my $minOSVersion = "";
 
 if ($ENV{"MAIN_PRODUCT_NAME"}) {
 	$productName = $ENV{"MAIN_PRODUCT_NAME"};
@@ -39,6 +45,9 @@ if ($ENV{"MAIN_PRODUCT_NAME"}) {
 	$repoDirectory = $ENV{"SRCROOT"};
 	if ($ENV{"SPARKLE_KEY_PATH"}) {
 		$privateKeyPath = $ENV{"SRCROOT"} . $ENV{"SPARKLE_KEY_PATH"};
+	}
+	if ($ENV{"MIN_OS_VERSION"}) {
+		$minOSVersion = '      "min-os-version": "'. $ENV{"MIN_OS_VERSION"} . '",';
 	}
 }
 else {	#	For Command Line Testing purposes only!
@@ -80,14 +89,13 @@ my $templateContents = do {
 # Set our variables
 # Get the current build's tar file Size in MB
 # 	to use them to set the CFBundleVersion value
-my $gitCommand = "/usr/local/bin/git";
 my $tarFileSize = `ls -ln "$tarFilePath"`;
 $tarFileSize =~ s/^([^ ]+)( +)([^ ]+)( +)([0-9]+)( +)([0-9]+)( +)([^ ]+)( +).+$/$9/g;
 $tarFileSize =~ s/^\s+|\s+$//g;
 # Date and build number
 my $dateTime = `date "+%d %b %Y %H:%M:%S"`;
 $dateTime =~ s/^\s+|\s+$//g;
-my $buildNumber = `cd "$repoDirectory";$gitCommand log --pretty=format:'' | wc -l | sed 's/[ \t]//g'`;
+my $buildNumber = `cd "$repoDirectory";git log --pretty=format:'' | wc -l | sed 's/[ \t]//g'`;
 $buildNumber =~ s/^\s+|\s+$//g;
 # The hash for the sparkle thing
 my $sparkleHash = "";
@@ -99,10 +107,10 @@ if ($privateKeyPath ne "") {
 }
 
 my $versionFileContents = "";
-my $previousAndCurrentTags = `cd "$repoDirectory";$gitCommand describe --tags \`cd "$repoDirectory";$gitCommand rev-list --tags --abbrev=0 --max-count=2\` --abbrev=0`;
+my $previousAndCurrentTags = `cd "$repoDirectory";git describe --tags \`cd "$repoDirectory";git rev-list --tags --abbrev=0 --max-count=2\` --abbrev=0`;
 (my $previousTag = $previousAndCurrentTags) =~ s/^.+\n(.+)\s+/$1/g;
 (my $currentTag = $previousAndCurrentTags) =~ s/^(.+)\n(.+)\s+/$1/g;
-my $commitHistory = `cd "$repoDirectory";$gitCommand log $previousTag..$currentTag --pretty=format:"%s"`;
+my $commitHistory = `cd "$repoDirectory";git log $previousTag..$currentTag --pretty=format:"%s"`;
 my $commitPattern = "^\\[(new|os|fix)\\]([\\s-]*)(.+)\$";
 my $startLine = "\n";
 foreach my $aLine (split /\n/, $commitHistory) {
@@ -119,6 +127,7 @@ $templateContents =~ s/__VERSION_STRING__/$versionString/;
 $templateContents =~ s/__FULL_DATE_TIME__/$dateTime/;
 $templateContents =~ s/__TAR_FILE_SIZE_IN_BYTES__/$tarFileSize/;
 $templateContents =~ s/__SPARKLE_DSA_HASH__/$sparkleHash/;
+$templateContents =~ s/__MIN_OS_VERSION__/$minOSVersion/;
 $templateContents =~ s/__CHANGE_LIST__/$versionFileContents\n          /;
 
 my $finalJSONFile = $configDir . "/version-info/" . $productCode . "/" . $buildNumber . "-" . $versionString . ".json";

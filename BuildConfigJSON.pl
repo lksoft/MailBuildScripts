@@ -9,9 +9,14 @@
 use strict;
 
 # Only do this if we have a final build indicator
-if ($ENV{"PRODUCT_NAME"} ne "Publish Build") {
-	print "Not making final build yet – skipping";
-#	return;
+if ($ENV{"PRODUCT_NAME"}) {
+ 	if ((!$ARGV[0] or ($ARGV[0] ne "build_test")) and ($ENV{"PRODUCT_NAME"} ne "Publish Build")) {
+		print "Not making final build yet – skipping";
+		exit;
+	}
+	elsif ($ARGV[0] eq "build_test") {
+		print "Creating JSON Config for build test!";
+	}
 }
 
 my $productCode;
