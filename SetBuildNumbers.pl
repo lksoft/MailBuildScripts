@@ -30,6 +30,10 @@ $SHAHASH =~ s/\s+$//;
 $GIT_VERSION =~ s/^\s+//;
 $GIT_VERSION =~ s/\s+$//;
 
+if (!$BRANCH) {
+	$BRANCH = 'DETACHED_HEAD';
+}
+
 die "$0: No git branch found" unless $BRANCH;
 
 # Get the contents as an XML format
