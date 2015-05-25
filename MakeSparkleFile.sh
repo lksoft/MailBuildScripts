@@ -5,6 +5,9 @@
 #
 #  Created by Scott Little on 10/7/13.
 #  Copyright (c) 2013 Little Known Software. All rights reserved.
+#
+#  I don't think this is used anywhere
+#
 
 if [[ "$CONFIGURATION" != Release* ]]; then
 	echo "Not packaging for Non-Deployment Style"

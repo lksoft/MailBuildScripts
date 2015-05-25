@@ -13,6 +13,7 @@ fi
 export REAL_PRODUCT="$MAIN_PRODUCT_NAME"
 export MY_SOURCE_INSTALLATION_DIR="$SRCROOT/$REAL_PRODUCT/Installation"
 export MY_INSTALLER_FILE="Install $REAL_PRODUCT.mpinstall"
+export MY_MPINSTALLER_FILE="$REAL_PRODUCT.mpinstall"
 #export MY_UNINSTALLER="Uninstall $REAL_PRODUCT"
 #export MY_UNINSTALLER_FILE="Uninstall $REAL_PRODUCT.mpremove"
 export MY_RELEASE_FOLDER="$SRCROOT/../Releases"
@@ -58,6 +59,39 @@ echo "Setting installer Icon and flags"
 SetFile -a C "$MY_INSTALLER_FILE"
 /usr/local/bin/seticon -d "$MY_SOURCE_INSTALLATION_DIR/installer.icns" "$MY_INSTALLER_FILE"
 SetFile -a BE "$MY_INSTALLER_FILE"
+
+
+#	make the mpinstall package for in app updates
+echo "Creating mpinstall package"
+
+#	make the installer file and copy in it's contents
+#
+#	first create the installer bundle folder
+#	next, copy the files into it
+
+mkdir "$MY_MPINSTALLER_FILE"
+
+cp "$MY_SOURCE_INSTALLATION_DIR/in-app-install-manifest.plist" "$MY_MPINSTALLER_FILE/mpm-manifest.plist"
+cp -R "$BUILT_PRODUCTS_DIR/$REAL_PRODUCT.mailbundle" "$MY_MPINSTALLER_FILE"
+# If there is a Delivery Folder Path, the copy it's contents as well
+if [[ "$DELIVERY_ITEMS_FOLDER" != "" ]]; then
+	echo "Copying other delivery items…"
+	cp -RfL "$DELIVERY_ITEMS_FOLDER/"* "./$MY_MPINSTALLER_FILE"
+else
+	echo "No other delivery items found"
+fi
+
+echo "Setting installer Icon and flags"
+
+#   then set the icon for the installer and hide the extension
+SetFile -a C "$MY_MPINSTALLER_FILE"
+#/usr/local/bin/seticon -d "$MY_SOURCE_INSTALLATION_DIR/installer.icns" "$MY_MPINSTALLER_FILE"
+SetFile -a BE "$MY_MPINSTALLER_FILE"
+
+
+
+
+######
 
 
 #	copy in the uninstaller and the readme

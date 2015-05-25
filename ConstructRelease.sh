@@ -16,6 +16,7 @@ export REAL_PRODUCT="$MAIN_PRODUCT_NAME"
 export MY_SOURCE_INSTALLATION_DIR="$SRCROOT/$REAL_PRODUCT/Installation"
 export MY_RELEASE_FOLDER="$SRCROOT/../Releases"
 export MY_PRODUCT_VERSIONED_NAME="$REAL_PRODUCT.$VERSION"
+export MY_PRODUCT_VERSIONED_MP_NAME="$REAL_PRODUCT.$VERSION.mpinstall"
 
 # Ensure that the installation directory exists, if not use without the REAL_PRODUCT name
 if [[ ! -e $MY_SOURCE_INSTALLATION_DIR ]]; then
@@ -30,6 +31,9 @@ cd "$BUILT_PRODUCTS_DIR"
 if [ -f "$MY_RELEASE_FOLDER/$MY_PRODUCT_VERSIONED_NAME.tar.bz2" ]; then
 	rm -f "$MY_RELEASE_FOLDER/$MY_PRODUCT_VERSIONED_NAME.tar.bz2"
 fi
+if [ -f "$MY_RELEASE_FOLDER/$MY_PRODUCT_VERSIONED_MP_NAME.tar.bz2" ]; then
+	rm -f "$MY_RELEASE_FOLDER/$MY_PRODUCT_VERSIONED_MP_NAME.tar.bz2"
+fi
 
 #   zip the file into versioned name
 if [[ "$OLD_PRODUCT_NAME" == "" ]]; then
@@ -40,6 +44,11 @@ else
 	tar -cyf "$MY_RELEASE_FOLDER/$MY_PRODUCT_VERSIONED_NAME.tar.bz2" "$REAL_PRODUCT.mailbundle" "$OLD_PRODUCT_NAME.mailbundle"
 	rm -Rf "$OLD_PRODUCT_NAME.mailbundle"
 fi
+
+#	make the mpinstall zipped version as well then remove it
+cd "$MY_RELEASE_FOLDER/$REAL_PRODUCT"
+tar -cyf "$MY_RELEASE_FOLDER/$MY_PRODUCT_VERSIONED_MP_NAME.tar.bz2" "$REAL_PRODUCT.mpinstall"
+rm -Rf "$REAL_PRODUCT.mpinstall"
 
 echo "Building Disk Image"
 
