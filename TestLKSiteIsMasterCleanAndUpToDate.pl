@@ -39,6 +39,12 @@ if ( -f $flagFilePath ) {
 	}
 }
 
+#	If this is a test run, then just write the file and leave
+if ($ENV{"TESTING_DEPLOY"}) {
+	print "Continuing with a testing deploy.\n";
+	exit 0;
+}
+
 #	Check to see if current repo is dirty or not
 my $gitCommand = "/usr/local/bin/git";
 my $testCurrent = `cd $lksiteDir;$gitCommand rev-parse --abbrev-ref HEAD`;

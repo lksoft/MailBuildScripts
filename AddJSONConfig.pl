@@ -25,11 +25,17 @@ my $productName;
 my $versionString;
 my $extraReleasePathValue = "";
 my $tarFilePath;
+my $mpTarFilePath;
 my $repoDirectory;
 my ($realPath) = abs_path($0) =~ m/(.*)AddJSONConfig.pl/i;
 my $signingScriptPath = $realPath . "sign_update.rb";
 my $privateKeyPath = "";
 my $minOSVersion = "";
+my $betaIndicator = '';
+
+if ($ENV{"BETA"} eq "YES") {
+	$betaIndicator = '      "is-beta": "true"';
+}
 
 if ($ENV{"MAIN_PRODUCT_NAME"}) {
 	$productName = $ENV{"MAIN_PRODUCT_NAME"};
@@ -42,6 +48,7 @@ if ($ENV{"MAIN_PRODUCT_NAME"}) {
 		$extraReleasePathValue = $ENV{"EXTRA_RELEASE_PATH"};
 	}
 	$tarFilePath = $ENV{"SRCROOT"} . "/.." . $extraReleasePathValue . "/Releases/" . $productName . "." . $versionString . ".tar.bz2";
+	$mpTarFilePath = $ENV{"SRCROOT"} . "/.." . $extraReleasePathValue . "/Releases/" . $productName . "." . $versionString . ".mpinstall.tar.bz2";
 	$repoDirectory = $ENV{"SRCROOT"};
 	if ($ENV{"SPARKLE_KEY_PATH"}) {
 		$privateKeyPath = $ENV{"SRCROOT"} . $ENV{"SPARKLE_KEY_PATH"};
@@ -67,6 +74,7 @@ else {	#	For Command Line Testing purposes only!
 		$privateKeyPath = "";
 	}
 	$tarFilePath = $projectDir . $productName . $extraReleasePathValue . "/Releases/" . $productName . "." . $versionString . ".tar.bz2";
+	$mpTarFilePath = $projectDir . $productName . $extraReleasePathValue . "/Releases/" . $productName . "." . $versionString . ".mpinstall.tar.bz2";
 	$repoDirectory = $projectDir . $productName;
 }
 
@@ -94,7 +102,7 @@ my $tarFileSize = `ls -ln "$tarFilePath"`;
 $tarFileSize =~ s/^([^ ]+)( +)([^ ]+)( +)([0-9]+)( +)([0-9]+)( +)([^ ]+)( +).+$/$9/g;
 $tarFileSize =~ s/^\s+|\s+$//g;
 # Date and build number
-my $dateTime = `date "+%d %b %Y %H:%M:%S"`;
+my $dateTime = `date "+%d %b %Y %H:%M"`;
 $dateTime =~ s/^\s+|\s+$//g;
 my $buildNumber = `cd "$repoDirectory";$gitCommand log --pretty=format:'' | wc -l | sed 's/[ \t]//g'`;
 $buildNumber =~ s/^\s+|\s+$//g;
@@ -117,10 +125,41 @@ my $startLine = "\n";
 foreach my $aLine (split /\n/, $commitHistory) {
 	if ($aLine =~ m/$commitPattern/i) {
 		my @values = $aLine =~ m/$commitPattern/i;
-		$versionFileContents .= $startLine . '            {"type":"' . lc($values[0]) . '","description":"' . $values[2] . '"}';
+		my $counter = 0;
+		my $cleanedLine = '';
+		foreach my $quotedPart (split /\"/, $values[2]) {
+			if (($counter % 2) == 1) {
+				$cleanedLine .= "“$quotedPart”";
+			}
+			else {
+				$cleanedLine .= $quotedPart;
+			}
+			$counter++;
+		}
+		$versionFileContents .= $startLine . '            {"type":"' . lc($values[0]) . '","description":"' . $cleanedLine . '"}';
 		$startLine = ",\n";
 	}
 }
+
+# setup values for the mpinstaller, if it is there
+my $supportsMPInstall = '';
+my $mpSparkleHash = '';
+my $mpTarFileSize = '';
+print "MPInstall Tar File:$mpTarFilePath";
+if ( -f "$mpTarFilePath" ) {
+	$supportsMPInstall = '      "supports-mpinstall": "true",';
+	my $tempFileSize = `ls -ln "$mpTarFilePath"`;
+	$tempFileSize =~ s/^([^ ]+)( +)([^ ]+)( +)([0-9]+)( +)([0-9]+)( +)([^ ]+)( +).+$/$9/g;
+	$tempFileSize =~ s/^\s+|\s+$//g;
+	$mpTarFileSize = '      "mpinstall-sparkle-size": '. $tempFileSize .',';
+	if ($privateKeyPath ne "") {
+		my $justHash = `ruby "$signingScriptPath" "$mpTarFilePath" "$privateKeyPath"`;
+		$justHash =~ s/^\s+|\s+$//g;
+		$mpSparkleHash = '      "mpinstall-sparkle-dsa-sig": "'. $justHash . '",';
+		$mpSparkleHash =~ s/^|\s+$//g;
+	}
+}
+
 
 # replace both the file size and the new contents
 $templateContents =~ s/__BUILD_VERSION__/$buildNumber/;
@@ -130,6 +169,10 @@ $templateContents =~ s/__TAR_FILE_SIZE_IN_BYTES__/$tarFileSize/;
 $templateContents =~ s/__SPARKLE_DSA_HASH__/$sparkleHash/;
 $templateContents =~ s/__MIN_OS_VERSION__/$minOSVersion/;
 $templateContents =~ s/__CHANGE_LIST__/$versionFileContents\n          /;
+$templateContents =~ s/__SUPPORTS_MP__/$supportsMPInstall/;
+$templateContents =~ s/__MP_SPARKLE_DSA_HASH__/$mpSparkleHash/;
+$templateContents =~ s/__MP_TAR_FILE_SIZE_IN_BYTES__/$mpTarFileSize/;
+$templateContents =~ s/__IS_BETA__/$betaIndicator/;
 
 my $finalJSONFile = $configDir . "/version-info/" . $productCode . "/" . $buildNumber . "-" . $versionString . ".json";
 # Rewrite the contents to the file
