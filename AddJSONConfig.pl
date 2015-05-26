@@ -15,8 +15,24 @@ if ($ENV{"PRODUCT_NAME"}) {
 		print "Not making final build yet – skipping";
 		exit;
 	}
+	elsif ($ENV{"BETA"} eq "YES") {
+		print "Creating JSON Config for BETA!";
+	}
 	elsif ($ARGV[0] eq "build_test") {
 		print "Creating JSON Config for build test!";
+	}
+}
+
+#	If the lksite is not available, exit
+my $lksiteDir = $ENV{"HOME"}."/Sites/lksite";
+#	Test to see if site folder exists
+if ( ! -d $lksiteDir ) {
+	print "The lksite directory does not exist - skipping this step.\n";
+	if ($ENV{"BETA"} eq "YES") {
+		exit 0;
+	}
+	else {
+		exit 1;
 	}
 }
 
@@ -34,7 +50,7 @@ my $minOSVersion = "";
 my $betaIndicator = '';
 
 if ($ENV{"BETA"} eq "YES") {
-	$betaIndicator = '      "is-beta": "true"';
+	$betaIndicator = '      "is-beta": "true",';
 }
 
 if ($ENV{"MAIN_PRODUCT_NAME"}) {
@@ -119,6 +135,10 @@ my $versionFileContents = "";
 my $previousAndCurrentTags = `cd "$repoDirectory";$gitCommand describe --tags \`cd "$repoDirectory";$gitCommand rev-list --tags --abbrev=0 --max-count=2\` --abbrev=0`;
 (my $previousTag = $previousAndCurrentTags) =~ s/^.+\n(.+)\s+/$1/g;
 (my $currentTag = $previousAndCurrentTags) =~ s/^(.+)\n(.+)\s+/$1/g;
+if ($ENV{"BETA"} eq "YES") {
+	$previousTag = $currentTag;
+	$currentTag = "HEAD";
+}
 my $commitHistory = `cd "$repoDirectory";$gitCommand log $previousTag..$currentTag --pretty=format:"%s"`;
 my $commitPattern = "^\\[(new|os|fix)\\]([\\s-]*)(.+)\$";
 my $startLine = "\n";

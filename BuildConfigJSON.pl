@@ -14,8 +14,24 @@ if ($ENV{"PRODUCT_NAME"}) {
 		print "Not making final build yet – skipping";
 		exit;
 	}
+	elsif ($ENV{"BETA"} eq "YES") {
+		print "Creating JSON Config for BETA!";
+	}
 	elsif ($ARGV[0] eq "build_test") {
 		print "Creating JSON Config for build test!";
+	}
+}
+
+#	If the lksite is not available, exit
+my $lksiteDir = $ENV{"HOME"}."/Sites/lksite";
+#	Test to see if site folder exists
+if ( ! -d $lksiteDir ) {
+	print "The lksite directory does not exist - skipping this step.\n";
+	if ($ENV{"BETA"} eq "YES") {
+		exit 0;
+	}
+	else {
+		exit 1;
 	}
 }
 
