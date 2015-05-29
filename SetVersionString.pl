@@ -17,7 +17,7 @@ if (-e $ENV{TEMP_VERSION_STRING_PATH}) {
 my $COMMITS_SINCE_LAST_TAG=`git log \`git rev-list --tags --abbrev=0 --max-count=1\`.. --pretty=format:'%h' | wc -l | sed 's/[ \t]//g'`;
 my $NEW_VERSION = $ENV{"VERSION_STRING"};
 
-print "Value of BETA is". $ENV{"BETA"};
+print "Value of BETA is" . $ENV{"BETA"};
 
 if (($ENV{"BETA"} eq "YES") && ($COMMITS_SINCE_LAST_TAG > 0)) {
 	$NEW_VERSION .= "b$COMMITS_SINCE_LAST_TAG";
