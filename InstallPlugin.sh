@@ -22,11 +22,11 @@ fi
 
 echo 'Copying plugin to Public directories...'
 
-PRE_EL_CAP_TEST_ACCOUNT="$HOME/Library/Mail/V2/IMAP-lksofttest@imap.gmail.com"
-POST_EL_CAP_TEST_ACCOUNT="$HOME/Library/Mail/V3/IMAP-lksofttest@gmail.com@imap.gmail.com"
+PRE_EL_CAP_LIVE_ACCOUNT="$HOME/Library/Mail/V2/IMAP-scott@littleknownsoftware.com@secure.emailsrvr.com"
+POST_EL_CAP_LIVE_ACCOUNT="$HOME/Library/Mail/V3/IMAP-scott@littleknownsoftware.com@secure.emailsrvr.com"
 
-# Make sure that the Shared folders are there
-if [[ -d "$PUB_DIR" && !( -d "$PRE_EL_CAP_TEST_ACCOUNT" || -d "$POST_EL_CAP_TEST_ACCOUNT") ]]; then
+# Make sure that the Shared folders are there and we are on live machine
+if [[ -d "$PUB_DIR" && (( -d "$POST_EL_CAP_LIVE_ACCOUNT") || ( -d "$PRE_EL_CAP_LIVE_ACCOUNT")) ]]; then
 
 	echo "Copying tar file to $PUB_DIR"
 
@@ -44,8 +44,8 @@ if [ "$CONFIGURATION" == Release* ]; then
 	exit 0
 fi
 
-# Don't do anything unless SJL's test environment is running
-if [[ !( -d "$PRE_EL_CAP_TEST_ACCOUNT" || -d "$POST_EL_CAP_TEST_ACCOUNT") ]]; then
+# Don't do anything if SJL's live environment is running
+if [[ ( -d "$PRE_EL_CAP_LIVE_ACCOUNT" || -d "$POST_EL_CAP_LIVE_ACCOUNT") ]]; then
 	echo "Not running test environment, won't replace plugin"
 	exit 0
 fi
