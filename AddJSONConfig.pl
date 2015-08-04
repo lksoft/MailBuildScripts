@@ -48,6 +48,7 @@ my $signingScriptPath = $realPath . "sign_update.rb";
 my $privateKeyPath = "";
 my $minOSVersion = "";
 my $betaIndicator = '';
+my $supplementalInfoText = '';
 
 if ($ENV{"BETA"} eq "YES") {
 	$betaIndicator = '      "is-beta": "true",';
@@ -180,6 +181,26 @@ if ( -f "$mpTarFilePath" ) {
 	}
 }
 
+# Get the contents of the warning or info into a variable
+my $supplementalInfoFile = "$ENV{SUPPLEMENTAL_VERSION_INFO_PATH}";
+if ( -f "$supplementalInfoFile" ) {
+	$supplementalInfoText = do {
+		local $/ = undef;
+		open my $fh, "<", $supplementalInfoFile
+			or die "could not open $supplementalInfoFile: $!";
+		<$fh>;
+	};
+	$supplementalInfoText =~ s/\n//g;
+	if ($supplementalInfoText ne "") {
+		$supplementalInfoText = "\"info\": \"$supplementalInfoText\",";
+	}
+	
+	#	If this is not a test run, then clear out the sup info file
+	if ($ENV{"TESTING_DEPLOY"} eq "NO") {
+		print "Emptying contents of Supplemental Version file.\n";
+		my $nothing = `echo "" > "$supplementalInfoFile"`
+	}
+};
 
 # replace both the file size and the new contents
 $templateContents =~ s/__BUILD_VERSION__/$buildNumber/;
@@ -193,6 +214,7 @@ $templateContents =~ s/__SUPPORTS_MP__/$supportsMPInstall/;
 $templateContents =~ s/__MP_SPARKLE_DSA_HASH__/$mpSparkleHash/;
 $templateContents =~ s/__MP_TAR_FILE_SIZE_IN_BYTES__/$mpTarFileSize/;
 $templateContents =~ s/__IS_BETA__/$betaIndicator/;
+$templateContents =~ s/__SUPPLEMENTAL_INFO_TEXT__/$supplementalInfoText/;
 
 my $finalJSONFile = $configDir . "/version-info/" . $productCode . "/" . $buildNumber . "-" . $versionString . ".json";
 # Rewrite the contents to the file
