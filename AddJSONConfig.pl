@@ -195,11 +195,6 @@ if ( -f "$supplementalInfoFile" ) {
 		$supplementalInfoText = "\"info\": \"$supplementalInfoText\",";
 	}
 	
-	#	If this is not a test run, then clear out the sup info file
-	if ($ENV{"TESTING_DEPLOY"} eq "NO") {
-		print "Emptying contents of Supplemental Version file.\n";
-		my $nothing = `echo "" > "$supplementalInfoFile"`
-	}
 };
 
 # replace both the file size and the new contents

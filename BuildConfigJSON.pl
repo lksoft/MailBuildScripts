@@ -41,6 +41,7 @@ my $versionString;
 my $extraReleasePathValue = "";
 my $packageExtension = ".dmg";
 my $dmgFilePath;
+my $minOSVersion = "";
 
 if ($ENV{"MAIN_PRODUCT_NAME"}) {
 	$productName = $ENV{"MAIN_PRODUCT_NAME"};
@@ -56,6 +57,9 @@ if ($ENV{"MAIN_PRODUCT_NAME"}) {
 		$packageExtension = $ENV{"PACKAGE_EXTENSION"};
 	}
 	$dmgFilePath = $ENV{"SRCROOT"} . "/.." . $extraReleasePathValue . "/Releases/" . $productName . "." . $versionString . $packageExtension;
+	if ($ENV{"MIN_OS_VERSION"}) {
+		$minOSVersion = $ENV{"MIN_OS_VERSION"};
+	}
 }
 else {	#	For Command Line Testing purposes only!
 	$productCode = $ARGV[0];
@@ -122,6 +126,7 @@ my $template = do {
 # replace both the file size and the new contents
 $template =~ s/__PRODUCT_CODE__/$productCode/;
 $template =~ s/__DMG_FILE_SIZE_IN_MB__/$dmgSize/;
+$template =~ s/__MIN_OS_VERSION__/$minOSVersion/;
 $template =~ s/__NEW_VERSION_INFO_LIST__/$versionFileContents/;
 
 my $finalJSONFile = $configDir . "/" . $productCode . ".json";

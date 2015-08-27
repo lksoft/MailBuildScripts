@@ -92,6 +92,20 @@ if (opendir(DIR, $JSONFileDIR)) {
 	}
 	closedir(DIR);
 }
+
+# Get the contents of the warning or info into a variable
+my $supplementalInfoText = "";
+my $supplementalInfoFile = "$ENV{SUPPLEMENTAL_VERSION_INFO_PATH}";
+if ( -f "$supplementalInfoFile" ) {
+	$supplementalInfoText = do {
+		local $/ = undef;
+		open my $fh, "<", $supplementalInfoFile
+			or die "could not open $supplementalInfoFile: $!";
+		<$fh>;
+	};
+	$supplementalInfoText =~ s/\n//g;
+};
+
 my $changeContents = "";
 if (defined $versionJSON) {
 	$versionJSON =~ s/^\s+|,\s+$//g;
@@ -125,7 +139,7 @@ if (defined $versionJSON) {
 		$aTest cmp $bTest;
 	} @changeList;
 	# Get the contents of the changes into a variable
-	$changeContents = "<p>Release Notes for this version:</p><ul class=\"new-features\">";
+	$changeContents = "<p>Release Notes for this version:</p>$supplementalInfoText<ul class=\"new-features\">";
 	foreach my $aChange (@orderedChangeList) {
 		$changeContents .= "<li><span class=\"change-type $aChange->{'type'}\">" . $changeMappings{$aChange->{'type'}} . "</span>: $aChange->{'description'}</li>";
 	}
