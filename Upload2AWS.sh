@@ -9,6 +9,10 @@
 # Validate the input
 SEND_FILE_PATH="$1"
 APP_ABBREV="$2"
+SUB_FOLDER=""
+if [ "$#" -gt 2 ]; then
+	SUB_FOLDER="$3/"
+fi
 
 
 # Ensure the file exists
@@ -24,7 +28,7 @@ if [ -z "$APP_ABBREV" ]; then
 fi
 
 # Build S3 Path
-S3_PATH="s3://media.littleknownsoftware.com/$APP_ABBREV/"
+S3_PATH="s3://media.littleknownsoftware.com/$APP_ABBREV/$SUB_FOLDER"
 
 echo "Loading file: '$SEND_FILE_PATH' to AWS at '$S3_PATH'…"
 
