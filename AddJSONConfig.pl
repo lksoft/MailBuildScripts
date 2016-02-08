@@ -10,16 +10,23 @@ use strict;
 use Cwd qw/abs_path/;
 
 # Only do this if we have a final build indicator
+my $isTestBuild = 'false';
+my $isBetaBuild = 'false';
+if ($ENV{"BETA"} eq "YES") {
+	$isBetaBuild = 'true';
+}
 if ($ENV{"PRODUCT_NAME"}) {
- 	if ((!$ARGV[0] or ($ARGV[0] ne "build_test")) and ($ENV{"PRODUCT_NAME"} ne "Publish Build")) {
+ 	if ((!$ARGV[0] or (($ARGV[0] ne "build_test") and ($ARGV[0] ne "build_beta"))) and ($ENV{"PRODUCT_NAME"} ne "Publish Build")) {
 		print "Not making final build yet – skipping";
 		exit;
 	}
-	elsif ($ENV{"BETA"} eq "YES") {
-		print "Creating JSON Config for BETA!";
-	}
 	elsif ($ARGV[0] eq "build_test") {
-		print "Creating JSON Config for build test!";
+		print "Creating JSON Config for TEST build!";
+		$isTestBuild = 'true';
+		$isBetaBuild = 'false';
+	}
+	elsif ($ARGV[0] eq "build_beta") {
+		print "Creating JSON Config for BETA build!";
 	}
 }
 
@@ -47,12 +54,7 @@ my ($realPath) = abs_path($0) =~ m/(.*)AddJSONConfig.pl/i;
 my $signingScriptPath = $realPath . "sign_update.rb";
 my $privateKeyPath = "";
 my $minOSVersion = "";
-my $betaIndicator = '';
 my $supplementalInfoText = '';
-
-if ($ENV{"BETA"} eq "YES") {
-	$betaIndicator = '      "is-beta": "true",';
-}
 
 if ($ENV{"MAIN_PRODUCT_NAME"}) {
 	$productName = $ENV{"MAIN_PRODUCT_NAME"};
@@ -123,6 +125,14 @@ my $dateTime = `date "+%d %b %Y %H:%M"`;
 $dateTime =~ s/^\s+|\s+$//g;
 my $buildNumber = `cd "$repoDirectory";$gitCommand log --pretty=format:'' | wc -l | sed 's/[ \t]//g'`;
 $buildNumber =~ s/^\s+|\s+$//g;
+my $buildNumberPath = "$repoDirectory/buildNumber.txt";
+if (-e "$buildNumberPath") {
+	my $deleted = `rm "$buildNumberPath"`;
+}
+open my $fileHandle, ">", "$buildNumberPath" or die "touch $buildNumberPath: $!\n"; 
+	print $fileHandle "$buildNumber";
+close $fileHandle;
+
 # The hash for the sparkle thing
 my $sparkleHash = "";
 if ($privateKeyPath ne "") {
@@ -208,7 +218,8 @@ $templateContents =~ s/__CHANGE_LIST__/$versionFileContents\n          /;
 $templateContents =~ s/__SUPPORTS_MP__/$supportsMPInstall/;
 $templateContents =~ s/__MP_SPARKLE_DSA_HASH__/$mpSparkleHash/;
 $templateContents =~ s/__MP_TAR_FILE_SIZE_IN_BYTES__/$mpTarFileSize/;
-$templateContents =~ s/__IS_BETA__/$betaIndicator/;
+$templateContents =~ s/__IS_BETA__/      "is-beta": "$isBetaBuild",/;
+$templateContents =~ s/__IS_TEST__/      "is-testing": "$isTestBuild",/;
 $templateContents =~ s/__SUPPLEMENTAL_INFO_TEXT__/$supplementalInfoText/;
 
 my $finalJSONFile = $configDir . "/version-info/" . $productCode . "/" . $buildNumber . "-" . $versionString . ".json";
