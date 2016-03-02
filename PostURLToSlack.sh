@@ -5,14 +5,12 @@ if [[ -f "$SRCROOT/lksitedirty.flag" ]]; then
     exit 1;
 fi
 
-VERSION=`cat "$TEMP_VERSION_STRING_PATH"`
-
-if [ "$#" -gt 0 ]; then
-	TYPE="$1"
-else
-	echo "Nothing to do"
+if [[ "$TESTING_DEPLOY" == "NO" ]]; then
+	echo "Testing deploy, so skipping Slack posting"
 	exit 0;
 fi
+
+VERSION=`cat "$TEMP_VERSION_STRING_PATH"`
 
 BUILD_NUM=" "
 if [[ -f "$SRCROOT/buildNumber.txt" ]]; then
@@ -23,7 +21,7 @@ fi
 
 GIT_BRANCH=`git rev-parse --abbrev-ref HEAD`
 GIT_HASH=`git rev-parse --short HEAD`
-MESSAGE_STRING="*$TYPE* $MAIN_PRODUCT_NAME build - $VERSION $BUILD_NUM[$GIT_BRANCH/$GIT_HASH]: http://media.littleknownsoftware.com/$PRODUCT_CODE/$MAIN_PRODUCT_NAME.$VERSION.dmg"
+MESSAGE_STRING="*$BUILD_TYPE* $MAIN_PRODUCT_NAME build - $VERSION $BUILD_NUM[$GIT_BRANCH/$GIT_HASH]: https://media.littleknownsoftware.com/$PRODUCT_CODE/$MAIN_PRODUCT_NAME.$VERSION.dmg"
 
 echo "Posting build URL to LKS Slack"
 curl -X POST "https://littleknown.slack.com/services/hooks/slackbot?token=KIaU8DnZuVhsjIjNTU3ShIRx&channel=%23builds" -d "$MESSAGE_STRING" -m 30 -s

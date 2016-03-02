@@ -58,7 +58,7 @@ if (!($productCode ~~ @validCodes)) {
 	exit 0;
 }
 
-my $sitePath = "/Users/scott/Sites/lksite/";
+my $sitePath = "$ENV{PRODUCT_SITE_PATH}";
 my $accountName = $accountNames{$productCode};
 my $twurlCommand = "cd $sitePath;source ~/.bash_profile;twurl";
 
@@ -70,7 +70,7 @@ if ($accountInfo !~ m/$accountName/) {
 }
 
 #	See if there is a relevant blog post
-my $postDir = "/Users/scott/Sites/lksite/source/_posts/";
+my $postDir = "$sitePath/_posts/";
 (my $mappedVersion = $versionString) =~ s/\./-/g;
 if (opendir(DIR, $postDir)) {
 	while (defined(my $aFile = readdir(DIR))) {

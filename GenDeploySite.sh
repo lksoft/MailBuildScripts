@@ -13,8 +13,8 @@ if [[ -f "$SRCROOT/lksitedirty.flag" ]]; then
     exit 1;
 fi
 
-if [[ -d "/Users/scott/sites/lksite" ]]; then
-	cd "/Users/scott/sites/lksite"
+if [[ -d "$PRODUCT_SITE_PATH" ]]; then
+	cd "$PRODUCT_SITE_PATH"
 	echo "Generating and Deploying LKSite to Live"
 	rake -q gen_deploy_live
 fi

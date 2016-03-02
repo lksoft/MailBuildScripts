@@ -15,7 +15,7 @@ if ($ENV{"SRCROOT"}) {
 }
 
 my $flagFilePath = "$baseDir/lksitedirty.flag";
-my $lksiteDir = $ENV{"HOME"}."/Sites/lksite";
+my $lksiteDir = $ENV{"PRODUCT_SITE_PATH"};
 
 sub writeFlagFile {
 	my ($filePath) = @_;

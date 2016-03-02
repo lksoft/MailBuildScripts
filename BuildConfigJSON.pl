@@ -8,26 +8,25 @@
 
 use strict;
 
-# Only do this if we have a final build indicator
-if ($ENV{"PRODUCT_NAME"}) {
- 	if ((!$ARGV[0] or (($ARGV[0] ne "build_test") and ($ARGV[0] ne "build_beta"))) and ($ENV{"PRODUCT_NAME"} ne "Publish Build")) {
-		print "Not making final build yet – skipping";
-		exit;
-	}
-	elsif ($ARGV[0] eq "build_test") {
-		print "Creating JSON Config for TEST build!";
-	}
-	elsif ($ARGV[0] eq "build_beta") {
-		print "Creating JSON Config for BETA build!";
-	}
+my $dirtyFlag = $ENV{"SRCROOT"} .'/lksitedirty.flag';
+if ( -f $dirtyFlag ) {
+	print "Not rebuilding site config!";
+	exit 0;
 }
 
+# Only do this if we have a final build indicator
+if (!$ENV{"BUILD_TYPE"}) {
+	print "Script called invalidly, no BUILD_TYPE was set – skipping";
+	exit 2;
+}
+print "Creating JSON Config for ". $ENV{"BUILD_TYPE"} ." build!";
+
 #	If the lksite is not available, exit
-my $lksiteDir = $ENV{"HOME"}."/Sites/lksite";
+my $lksiteDir = $ENV{"PRODUCT_SITE_PATH"};
 #	Test to see if site folder exists
 if ( ! -d $lksiteDir ) {
 	print "The lksite directory does not exist - skipping this step.\n";
-	if ($ENV{"BETA"} eq "YES") {
+	if ($ENV{"BUILD_TYPE"} ne "RELEASE") {
 		exit 0;
 	}
 	else {
@@ -76,9 +75,9 @@ else {	#	For Command Line Testing purposes only!
 	$dmgFilePath = "/Users/scott/Projects/Littleknown/" . $productName . $extraReleasePathValue . "/Releases/" . $productName . "." . $versionString . $packageExtension;
 }
 
-my $configDir = "/Users/scott/Sites/lksite/source/services/config";
+my $configDir = "$lksiteDir/_product";
 
-my $versionDir = $configDir . "/version-info/" . $productCode;
+my $versionDir = "$configDir/$productCode";
 my @fileList;
 opendir(DIR, $versionDir) or die "Couldn't open folder for $productCode: $!";
 while (defined(my $aFile = readdir(DIR))) {
@@ -115,7 +114,7 @@ $dmgSize =~ s/^([^ ]+)( +)([^ ]+)( +)([0-9]+)( +)([0-9]+)( +)([^ ]+)( +).+$/$9/g
 $dmgSize = sprintf("%.1f", $dmgSize / (1024 * 1024));
 
 # Get the contents as an XML format
-my $templatePath = $configDir . "/version-info/" . $productCode . "-template.json";
+my $templatePath = "$configDir/$productCode-template.json";
 my $template = do {
 	local $/ = undef;
 	open my $fh, "<", $templatePath
@@ -129,7 +128,7 @@ $template =~ s/__DMG_FILE_SIZE_IN_MB__/$dmgSize/;
 $template =~ s/__MIN_OS_VERSION__/$minOSVersion/;
 $template =~ s/__NEW_VERSION_INFO_LIST__/$versionFileContents/;
 
-my $finalJSONFile = $configDir . "/" . $productCode . ".json";
+my $finalJSONFile = "$configDir/../_data/$productCode.json";
 # Rewrite the contents to the file
 do {
 	open my $fh, ">", $finalJSONFile

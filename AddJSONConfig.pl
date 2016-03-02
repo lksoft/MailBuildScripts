@@ -9,33 +9,33 @@
 use strict;
 use Cwd qw/abs_path/;
 
+my $dirtyFlag = $ENV{"SRCROOT"} .'/lksitedirty.flag';
+if ( -f $dirtyFlag ) {
+	print "Not rebuilding site config!";
+	exit 0;
+}
+
 # Only do this if we have a final build indicator
 my $isTestBuild = 'false';
 my $isBetaBuild = 'false';
-if ($ENV{"BETA"} eq "YES") {
+if (!$ENV{"BUILD_TYPE"}) {
+	print "Script called invalidly, no BUILD_TYPE was set – skipping";
+	exit 2;
+}
+if ($ENV{"BUILD_TYPE"} eq "BETA") {
 	$isBetaBuild = 'true';
 }
-if ($ENV{"PRODUCT_NAME"}) {
- 	if ((!$ARGV[0] or (($ARGV[0] ne "build_test") and ($ARGV[0] ne "build_beta"))) and ($ENV{"PRODUCT_NAME"} ne "Publish Build")) {
-		print "Not making final build yet – skipping";
-		exit;
-	}
-	elsif ($ARGV[0] eq "build_test") {
-		print "Creating JSON Config for TEST build!";
-		$isTestBuild = 'true';
-		$isBetaBuild = 'false';
-	}
-	elsif ($ARGV[0] eq "build_beta") {
-		print "Creating JSON Config for BETA build!";
-	}
+elsif ($ENV{"BUILD_TYPE"} eq "TEST") {
+	$isTestBuild = 'true';
 }
+print "Creating JSON Config for ". $ENV{"BUILD_TYPE"} ." build!";
 
 #	If the lksite is not available, exit
-my $lksiteDir = $ENV{"HOME"}."/Sites/lksite";
+my $lksiteDir = $ENV{"PRODUCT_SITE_PATH"};
 #	Test to see if site folder exists
 if ( ! -d $lksiteDir ) {
 	print "The lksite directory does not exist - skipping this step.\n";
-	if ($ENV{"BETA"} eq "YES") {
+	if ($ENV{"BUILD_TYPE"} ne "RELEASE") {
 		exit 0;
 	}
 	else {
@@ -101,11 +101,11 @@ if ($privateKeyPath ne "") {
 	die "The Private key for the Sparkle signature is not available.\nPath: $privateKeyPath" unless -f $privateKeyPath;
 }
 
-my $configDir = "/Users/scott/Sites/lksite/source/services/config";
-my $versionDir = $configDir . "/version-info/" . $productCode;
+my $configDir = "$lksiteDir/_product";
+my $versionDir = "$configDir/$productCode";
 
 # Get the contents of the template into a variable
-my $templateFile = $configDir . "/version-info/version-template.json";
+my $templateFile = "$configDir/version-template.json";
 my $templateContents = do {
 	local $/ = undef;
 	open my $fh, "<", $templateFile
@@ -146,7 +146,7 @@ my $versionFileContents = "";
 my $previousAndCurrentTags = `cd "$repoDirectory";$gitCommand describe --tags \`cd "$repoDirectory";$gitCommand rev-list --tags --abbrev=0 --max-count=2\` --abbrev=0`;
 (my $previousTag = $previousAndCurrentTags) =~ s/^.+\n(.+)\s+/$1/g;
 (my $currentTag = $previousAndCurrentTags) =~ s/^(.+)\n(.+)\s+/$1/g;
-if ($ENV{"BETA"} eq "YES") {
+if ($isBetaBuild) {
 	$previousTag = $currentTag;
 	$currentTag = "HEAD";
 }
@@ -222,7 +222,7 @@ $templateContents =~ s/__IS_BETA__/      "is-beta": "$isBetaBuild",/;
 $templateContents =~ s/__IS_TEST__/      "is-testing": "$isTestBuild",/;
 $templateContents =~ s/__SUPPLEMENTAL_INFO_TEXT__/$supplementalInfoText/;
 
-my $finalJSONFile = $configDir . "/version-info/" . $productCode . "/" . $buildNumber . "-" . $versionString . ".json";
+my $finalJSONFile = "$configDir/$productCode/$buildNumber-$versionString.json";
 # Rewrite the contents to the file
 do {
 	open my $fh, ">", $finalJSONFile
