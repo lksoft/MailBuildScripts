@@ -9,7 +9,7 @@
 use strict;
 use warnings;
 use 5.010;
-use JSON qw( decode_json );
+use JSON qw/decode_json/;
 
 my $productCode = $ARGV[0];
 my $versionString = $ARGV[1];

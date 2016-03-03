@@ -7,7 +7,6 @@
 #  Copyright (c) 2016 Little Known Software. All rights reserved.
 
 use strict;
-# use Cwd qw/abs_path/;
 use File::Basename;
 
 # Defaults with environment variables
@@ -44,12 +43,7 @@ if ( ! -f $localFilePath ) {
 	exit 1;
 }
 
-#	Test to see if a valid code was sent
-if ("$productCode" eq "feed") {
-	$awsPath = "$bucketName/$subFolder/$fileName";
-}
-
-print "Loading file: '$localFilePath' to AWS at '$awsPath'…";
+print "Uploading file: '$localFilePath' to AWS at '$awsPath'…\n";
 
 my $dirName = dirname(__FILE__);
 # Put the file, overwriting if it exists already
