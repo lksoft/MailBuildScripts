@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
-
+# 
 #  ReleaseNotesAsHTML.pl
-#  Generic
+#  BuildScripts
 #
 #  Created by Scott Little on 29/2/2016.
 #  Copyright (c) 2016 Little Known Software. All rights reserved.
@@ -16,22 +16,42 @@ my $versionString = $ARGV[1];
 my $sitePath = $ARGV[2];
 my $supInfoPath = $ARGV[3];
 
-#	Get the release notes into a replacing format
-my $versionJSON;
-my $JSONFileDIR = "$sitePath/_product/$productCode";
-if (opendir(DIR, $JSONFileDIR)) {
-	while (defined(my $aFile = readdir(DIR))) {
-		if ($aFile =~ m/$versionString\.json$/i) {
-			$versionJSON = do {
-				local $/ = undef;
-				open my $fh, "<", ($JSONFileDIR . "/" . $aFile)
-					or die "Could not open $aFile for reading: $!";
-				<$fh>;
-			};
-			last;
+# Get the release notes from the repo
+my $isReleaseBuild = 'false';
+if ($ENV{"BUILD_TYPE"} eq "RELEASE") {
+	$isReleaseBuild = 'true';
+}
+my $repoDirectory = $ENV{"SRCROOT"};
+my $gitCommand = "/usr/local/bin/git";
+my $versionFileContents = "";
+my $previousAndCurrentTags = `cd "$repoDirectory";$gitCommand describe --tags \`cd "$repoDirectory";$gitCommand rev-list --tags --abbrev=0 --max-count=2\` --abbrev=0`;
+(my $previousTag = $previousAndCurrentTags) =~ s/^.+\n(.+)\s+/$1/g;
+(my $currentTag = $previousAndCurrentTags) =~ s/^(.+)\n(.+)\s+/$1/g;
+if ($isReleaseBuild eq 'false') {
+	$previousTag = $currentTag;
+	$currentTag = "HEAD";
+}
+my $commitHistory = `cd "$repoDirectory";$gitCommand log $previousTag..$currentTag --pretty=format:"%s"`;
+my $commitPattern = "^\\[(new|os|fix)\\]([\\s-]*)(.+)\$";
+my @changeList = ();
+foreach my $aLine (split /\n/, $commitHistory) {
+	if ($aLine =~ m/$commitPattern/i) {
+		my @values = ($aLine =~ m/$commitPattern/i);
+		my $counter = 0;
+		my $cleanedLine = '';
+		foreach my $quotedPart (split /\"/, $values[2]) {
+			if (($counter % 2) == 1) {
+				$cleanedLine .= "“$quotedPart”";
+			}
+			else {
+				$cleanedLine .= $quotedPart;
+			}
+			$counter++;
 		}
+		my $type = lc($values[0]);
+		my %infoHash = ('type' => $type, 'description' => $cleanedLine);
+		push(@changeList, \%infoHash);
 	}
-	closedir(DIR);
 }
 
 #	Get the release notes into a replacing format
@@ -51,35 +71,26 @@ if ( -f "$stringJSONFilePath" ) {
 
 # Get the contents of the warning or info into a variable
 my $supplementalInfoText = "";
-my $supplementalInfoFile = "supInfoPath";
-if ( -f "$supplementalInfoFile" ) {
+if ( -f "$supInfoPath" ) {
 	$supplementalInfoText = do {
 		local $/ = undef;
-		open my $fh, "<", $supplementalInfoFile
-			or die "could not open $supplementalInfoFile: $!";
+		open my $fh, "<", $supInfoPath
+			or die "could not open $supInfoPath: $!";
 		<$fh>;
 	};
 	$supplementalInfoText =~ s/\n//g;
 };
 
 my $changeContents = "";
-if (defined $versionJSON) {
-	$versionJSON =~ s/^\s+|,\s+$//g;
-	my $decoded = decode_json($versionJSON);
-	my @changeList = @{ $decoded->{"lang"}{"en"}{"changes"} };
-	
-	# Sort the items by the order
-	my @orderedChangeList = sort {
-		$stringMappings{$a->{'type'}}{'order'} <=> $stringMappings{$b->{'type'}}{'order'}
-	} @changeList;
-	# Get the contents of the changes into a variable
-	$changeContents = "$supplementalInfoText<ul class=\"new-features\">";
-	foreach my $aChange (@orderedChangeList) {
-		$changeContents .= "<li><span class=\"change-type $aChange->{'type'}\">" . $stringMappings{$aChange->{'type'}}{'text'} . "</span>: $aChange->{'description'}</li>";
-	}
-	$changeContents .= "</ul>";
-	
+# Sort the items by the order
+my @orderedChangeList = sort {
+	$stringMappings{$a->{'type'}}{'order'} <=> $stringMappings{$b->{'type'}}{'order'}
+} @changeList;
+# Get the contents of the changes into a variable
+$changeContents = "$supplementalInfoText<ul class=\"new-features\">";
+foreach my $aChange (@orderedChangeList) {
+	$changeContents .= "<li><span class=\"change-type $aChange->{'type'}\">" . $stringMappings{$aChange->{'type'}}{'text'} . "</span>: $aChange->{'description'}</li>";
 }
-
-print $changeContents;
+$changeContents .= "</ul>";
+	
 
