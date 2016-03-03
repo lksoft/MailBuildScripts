@@ -1,13 +1,12 @@
 #!/usr/bin/perl -w
-
+# 
 #  AddJSONConfig.pl
-#  Tealeaves
+#  BuildScripts
 #
 #  Created by Scott Little on 4/3/2014.
 #  Copyright (c) 2014 Little Known Software. All rights reserved.
 
 use strict;
-#use Cwd qw/abs_path/;
 use File::Basename;
 use JSON qw/decode_json/;
 
@@ -78,6 +77,7 @@ my $privateKeyPath = '';
 if ($ENV{"SPARKLE_KEY_PATH"}) {
 	$privateKeyPath = $ENV{"SRCROOT"} . $ENV{"SPARKLE_KEY_PATH"};
 }
+die "The Private key for the Sparkle signature is not available.\nPath: $privateKeyPath" unless -f $privateKeyPath;
 
 # Load the site json file
 my $jsonPath = $ENV{"PRODUCT_SITE_PATH"} ."/_data/$productCode.json";
@@ -92,19 +92,7 @@ my $price = $decoded->{'prices'}{'usd'};
 # Ensure that we have a clean feeds folder in temp
 my $tempFeedsFolder = $ENV{"TEMP_DIR"}. "/feeds";
 if ( -e "$tempFeedsFolder" ) {
-
-	my $foundFile = 0;
-	opendir(DIR, "$tempFeedsFolder") or die $!;
-	while (my $file = readdir(DIR)) {
-		if ("$file" ne '.' && "$file" ne '..') {
-			$foundFile = 1;
-		}
-	}
-    closedir(DIR);
-    
-    if ($foundFile) {
-		print `rm "$tempFeedsFolder/"*`;
-	}
+	unlink glob "$tempFeedsFolder/*";
 }
 else {
 	print "Creating folder: $tempFeedsFolder\n";

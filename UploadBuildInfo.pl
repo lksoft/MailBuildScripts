@@ -26,7 +26,6 @@ my $buildType = $ENV{"BUILD_TYPE"};
 my $sitePath = $ENV{"PRODUCT_SITE_PATH"};
 
 # Load the site json file
-my $jsonPath = $ENV{"PRODUCT_SITE_PATH"} ."/_data/$productCode.json";
 my $minOS = $ENV{"MIN_OS_VERSION"};
 
 # Get the current git branch and sha hash
@@ -57,6 +56,7 @@ $release{'min_os'} = $minOS;
 $release{'file_name'} = "$compactProductName.$versionString.dmg";
 $release{'notes'} = $changeContents;
 my $releaseJSON = encode_json(\%release);
+$releaseJSON = uri_escape_utf8($releaseJSON);
 
-my $result = `curl -X "POST" "$uploadBuildInfoURL" -H "Content-Type: application/json" -d '$releaseJSON'`;
+my $result = `curl -s -X "POST" "$uploadBuildInfoURL" -H "Content-Type: application/json" -d "$releaseJSON"`;
 print $result;
