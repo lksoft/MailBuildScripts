@@ -11,12 +11,6 @@ use File::Basename;
 
 my $dirName = dirname(__FILE__);
 
-my $siteDirtyFlag = $ENV{"SRCROOT"} .'/lksitedirty.flag';
-if ( -f "$siteDirtyFlag" ) {
-	print "Site repo is not clean, skipping the push to servers.\n";
-	exit(1);
-}
-
 # If we are just testing the deploy process, do waste time pushing either
 if ($ENV{"TESTING_DEPLOY"} ne "NO") {
 	print "Skipping the Copying of files to AWS server for deploy porcess testing.\n";

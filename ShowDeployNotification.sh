@@ -8,18 +8,13 @@
 
 # Run script to show line count in Notifications
 
-if [[ -f "$SRCROOT/lksitedirty.flag" ]]; then
-	MY_TITLE="$MAIN_PRODUCT_NAME $BUILD_TYPE Not Deployed!"
-	MY_TEXT="LKSite not clean"
+VERSION=`cat $TEMP_VERSION_STRING_PATH`
+if [[ "$TESTING_DEPLOY" == "NO" ]]; then
+	MY_TITLE="$MAIN_PRODUCT_NAME $BUILD_TYPE Deployed"
+	MY_TEXT="Version $VERSION published!"
 else
-    VERSION=`cat $TEMP_VERSION_STRING_PATH`
-    if [[ "$TESTING_DEPLOY" == "NO" ]]; then
-		MY_TITLE="$MAIN_PRODUCT_NAME $BUILD_TYPE Deployed"
-		MY_TEXT="Version $VERSION published!"
-    else
-		MY_TITLE="$MAIN_PRODUCT_NAME $BUILD_TYPE Not Deployed"
-		MY_TEXT="Version $VERSION built for test!"
-    fi
+	MY_TITLE="$MAIN_PRODUCT_NAME $BUILD_TYPE Not Deployed"
+	MY_TEXT="Version $VERSION built for test!"
 fi
 
 MY_DIR=`dirname ${0}`

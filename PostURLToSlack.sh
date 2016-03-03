@@ -1,10 +1,5 @@
 #!/bin/sh
 
-if [[ -f "$SRCROOT/lksitedirty.flag" ]]; then
-	echo "Not posting build URL to Slack"
-    exit 1;
-fi
-
 if [[ "$TESTING_DEPLOY" == "NO" ]]; then
 	echo "Testing deploy, so skipping Slack posting"
 	exit 0;
