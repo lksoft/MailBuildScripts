@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [[ "$TESTING_DEPLOY" == "NO" ]]; then
+if [[ "$TESTING_DEPLOY" == "YES" ]]; then
 	echo "Testing deploy, so skipping Slack posting"
 	exit 0;
 fi
