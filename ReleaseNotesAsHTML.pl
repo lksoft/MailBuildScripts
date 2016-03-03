@@ -93,4 +93,4 @@ foreach my $aChange (@orderedChangeList) {
 }
 $changeContents .= "</ul>";
 	
-
+print $changeContents;
