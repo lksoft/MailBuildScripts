@@ -29,4 +29,4 @@ echo "Posting build URL to LKS Slack"
 curl -X POST "https://littleknown.slack.com/services/hooks/slackbot?token=KIaU8DnZuVhsjIjNTU3ShIRx&channel=%23builds" -d "$MESSAGE_STRING" -m 30 -s
 
 echo "Posting build URL to Indev Slack"
-curl -X POST "https://indev.slack.com/services/hooks/slackbot?token=Clnt0J7gPsIWnkpkGwJRN7vw&channel=%23newbuilds" -d "$MESSAGE_STRING" -m 30 -s
+curl -X POST "https://smallcubed.slack.com/services/hooks/slackbot?token=Clnt0J7gPsIWnkpkGwJRN7vw&channel=%23newbuilds" -d "$MESSAGE_STRING" -m 30 -s
