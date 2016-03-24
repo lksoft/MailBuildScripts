@@ -27,7 +27,7 @@ else {	#	For Command Line Testing purposes only!
 	$productCode = $ARGV[0];
 	$versionString = $ARGV[1];
 	$productName = "Tealeaves";
-	if ($productCode eq "sigpro") {
+	if ($productCode eq "sp") {
 		$productName = "SignatureProfiler";
 	}
 	if ($productCode eq "mpm") {
@@ -48,8 +48,8 @@ if ($argCount > $argParseStart) {
 
 #	Test for valid productCode
 my %accountNames = (
-	"sis" => "TealeavesMail",
-	"sigpro" => "sigprofiler",
+	"tlv" => "TealeavesMail",
+	"sp" => "sigprofiler",
 	"badtest" => "notthere"
 );
 my @validCodes = keys %accountNames;

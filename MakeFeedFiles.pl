@@ -38,26 +38,19 @@ if ($ENV{"MIN_OS_VERSION"}) {
 
 # Set variables depending on build type
 my $machine = "smallcubed.com";
-my $feedQuery = '';
-my $releaseNotesQuery = '';
-my $subPath = 'releases';
-my $feedPathSupplement = '';
-my $outgoingFileNameBase = 'mpinstall';
+my $subPath = 'release';
+my $nameSupplement = '';
 my @feedTypes = ('standard', 'mpinstall');
 if ($ENV{"BUILD_TYPE"} eq "BETA") {
 	@feedTypes = ('mpinstall-beta');
-	$feedQuery = '?isBeta=1';
-	$releaseNotesQuery = '?isBeta=1';
-	$subPath = 'publicBeta';
-	$outgoingFileNameBase .= '-beta';
+	$subPath = 'beta';
+	$nameSupplement = '-beta';
 }
 elsif ($ENV{"BUILD_TYPE"} eq "TEST") {
 	@feedTypes = ('mpinstall-test');
-	$releaseNotesQuery = '?isTest=1';
 	$machine = "test.". $machine;
-	$subPath = 'bugs';
-	$feedPathSupplement = '-test';
-	$outgoingFileNameBase .= '-test';
+	$subPath = 'bug';
+	$nameSupplement = '-test';
 }
 elsif ($ENV{"BUILD_TYPE"} ne "RELEASE") {
 	print "The build type[". $ENV{"BUILD_TYPE"} ."] was invalid!\n";
@@ -112,9 +105,9 @@ foreach my $feedType (@feedTypes) {
 	if ("$feedType" ne "standard") {
 		$extension = "mpinstall.$extension";
 		$feedPath = 'feed-mpt';
-		$outgoingFileName = "$outgoingFileNameBase.xml";
+		$outgoingFileName = "mpinstall$nameSupplement.xml";
 	}
-	$feedPath .= $feedPathSupplement;
+	$feedPath .= $nameSupplement;
 	my $tarFilePath = "$tarFilePathBase.$extension";
 	# Get the current build's tar file Size in MB
 	# 	to use them to set the CFBundleVersion value
@@ -146,12 +139,12 @@ foreach my $feedType (@feedTypes) {
     </mpm>
 	<channel>
 		<title>$productName $ENV{"BUILD_TYPE"} App Cast</title>
-		<link>https://$machine/$feedPath/$productCode$feedQuery</link>
+		<link>https://$machine/$feedPath/$productCode</link>
 		<description>Most recent changes with links to updates.</description>
 		<language>en</language>
 			<item>
 				<title>Version $versionString</title>
-				<sparkle:releaseNotesLink xml:lang="en">https://$machine/change-info/$productCode$releaseNotesQuery</sparkle:releaseNotesLink>
+				<sparkle:releaseNotesLink xml:lang="en">https://$machine/change-info$nameSupplement/$productCode</sparkle:releaseNotesLink>
 				<pubDate>$releaseTime</pubDate>
 				<enclosure url="https://$secureHostPath/$subPath/$productCode/$productName.$versionString.$extension" sparkle:version="$buildNumber" sparkle:shortVersionString="$versionString" length="$tarFileSize" type="application/octet-stream" sparkle:dsaSignature="$sparkleHash"/>
 				<sparkle:minimumSystemVersion>$minOSVersion</sparkle:minimumSystemVersion>
