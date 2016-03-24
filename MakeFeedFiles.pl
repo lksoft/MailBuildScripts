@@ -18,7 +18,7 @@ my $versionString;
 my $extraReleasePathValue = '';
 my $repoDirectory;
 my $minOSVersion = '';
-my $secureHostPath = 's3.amazonaws.com/dl.smallcubed.com';
+my $secureHostPath = 's3.amazonaws.com/media.smallcubed.com';
 my $imageCDN = 'https://s3.amazonaws.com/media.smallcubed.com';
 my $gitCommand = "/usr/local/bin/git";
 
@@ -73,7 +73,7 @@ if ($ENV{"SPARKLE_KEY_PATH"}) {
 die "The Private key for the Sparkle signature is not available.\nPath: $privateKeyPath" unless -f $privateKeyPath;
 
 # Load the site json file
-my $jsonPath = $ENV{"PRODUCT_SITE_PATH"} ."/_data/$productCode.json";
+my $jsonPath = $ENV{"PRODUCT_SITE_PATH"} ."/_data/products/$productCode.json";
 my $productJSON = `cat "$jsonPath"`;
 my $decoded = decode_json($productJSON);
 my $logoName = $decoded->{'logo'};

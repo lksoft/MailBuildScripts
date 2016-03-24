@@ -10,13 +10,13 @@ use strict;
 use File::Basename;
 
 # Defaults with environment variables
-my $subFolder = "releases";
+my $subFolder = "release";
 if ($ENV{"BUILD_TYPE"}) {
 	if ($ENV{"BUILD_TYPE"} eq "BETA") {
-		$subFolder = "publicBeta";
+		$subFolder = "beta";
 	}
 	elsif ($ENV{"BUILD_TYPE"} eq "TEST") {
-		$subFolder = "bugs";
+		$subFolder = "bug";
 	}
 }
 my $bucketName = $ENV{"BUCKET_NAME"};
