@@ -49,7 +49,7 @@ if ($ENV{"BUILD_TYPE"} eq "BETA") {
 }
 elsif ($ENV{"BUILD_TYPE"} eq "TEST") {
 	@feedTypes = ('mpinstall-test');
-	$machine = "test.". $machine;
+	$machine = "fstest.". $machine;
 	$subPath = 'bug';
 	$nameSupplement = '-test';
 }
