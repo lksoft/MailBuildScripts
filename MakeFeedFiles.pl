@@ -10,7 +10,6 @@ use strict;
 use File::Basename;
 use JSON qw/decode_json/;
 
-use Data::Dumper;
 
 my $dirName = dirname(__FILE__);
 my $productCode;
@@ -57,10 +56,25 @@ elsif ($ENV{"BUILD_TYPE"} ne "RELEASE") {
 	print "The build type[". $ENV{"BUILD_TYPE"} ."] was invalid!\n";
 	exit(1);
 }
+
+my $logoName = '';
+my $mpmDescription = '';
+my $purchaseURL = '';
+my $price = '';
 if ($productCode eq "mpm") {
 	@feedTypes = ("standard$nameSupplement");
-	print Dumper(@feedTypes);
 }
+else {
+# Load the site json file
+	my $jsonPath = $ENV{"PRODUCT_SITE_PATH"} ."/_data/products/$productCode.json";
+	my $productJSON = `cat "$jsonPath"`;
+	my $decoded = decode_json($productJSON);
+	$logoName = $decoded->{'logo'};
+	$mpmDescription = $decoded->{'plugin_description'};
+	$purchaseURL = $decoded->{'purchase_url'};
+	$price = $decoded->{'prices'}{'usd'};
+}
+
 
 # Set our variables
 # Date and build number
@@ -76,15 +90,6 @@ if ($ENV{"SPARKLE_KEY_PATH"}) {
 	$privateKeyPath = $ENV{"SRCROOT"} . $ENV{"SPARKLE_KEY_PATH"};
 }
 die "The Private key for the Sparkle signature is not available.\nPath: $privateKeyPath" unless -f $privateKeyPath;
-
-# Load the site json file
-my $jsonPath = $ENV{"PRODUCT_SITE_PATH"} ."/_data/products/$productCode.json";
-my $productJSON = `cat "$jsonPath"`;
-my $decoded = decode_json($productJSON);
-my $logoName = $decoded->{'logo'};
-my $mpmDescription = $decoded->{'mpm-description'};
-my $purchaseURL = $decoded->{'purchase-url'};
-my $price = $decoded->{'prices'}{'usd'};
 
 
 # Ensure that we have a clean feeds folder in temp
@@ -112,9 +117,7 @@ foreach my $feedType (@feedTypes) {
 		$extension = "mpinstall.$extension";
 		$feedPath = 'feed-mpt';
 		$outgoingFileName = "mpinstall$nameSupplement.xml";
-	print "Outgoing Filename is mpinstall:$outgoingFileName\n";
 	}
-	print "Outgoing Filename is:$outgoingFileName\n";
 	$feedPath .= $nameSupplement;
 	my $tarFilePath = "$tarFilePathBase.$extension";
 	# Get the current build's tar file Size in MB
