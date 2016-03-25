@@ -10,6 +10,7 @@ use strict;
 use File::Basename;
 use JSON qw/decode_json/;
 
+use Data::Dumper;
 
 my $dirName = dirname(__FILE__);
 my $productCode;
@@ -56,12 +57,16 @@ elsif ($ENV{"BUILD_TYPE"} ne "RELEASE") {
 	print "The build type[". $ENV{"BUILD_TYPE"} ."] was invalid!\n";
 	exit(1);
 }
+if ($productCode eq "mpm") {
+	@feedTypes = ("standard$nameSupplement");
+	print Dumper(@feedTypes);
+}
 
 # Set our variables
 # Date and build number
 my $releaseTime = `date "+%a, %d %b %Y %H:%M:%S %z"`;
 $releaseTime =~ s/^\s+|\s+$//g;
-my $buildNumber = `cat $repoDirectory/buildNumber.txt`;
+my $buildNumber = `cat "$repoDirectory/buildNumber.txt"`;
 $buildNumber =~ s/^\s+|\s+$//g;
 
 my $tarFilePathBase = $ENV{"SRCROOT"} . "/..$extraReleasePathValue/Releases/$productName.$versionString";
@@ -83,8 +88,9 @@ my $price = $decoded->{'prices'}{'usd'};
 
 
 # Ensure that we have a clean feeds folder in temp
-my $tempFeedsFolder = $ENV{"TEMP_DIR"}. "/feeds";
+my $tempFeedsFolder = $ENV{"TEMP_FEEDS_FOLDER"};
 if ( -e "$tempFeedsFolder" ) {
+	print "Should be emptying files from:$tempFeedsFolder\n";
 	unlink glob "$tempFeedsFolder/*";
 }
 else {
@@ -101,12 +107,14 @@ foreach my $feedType (@feedTypes) {
 
 	my $extension = 'tar.bz2';
 	my $feedPath = 'feed';
-	my $outgoingFileName = 'standard.xml';
-	if ("$feedType" ne "standard") {
+	my $outgoingFileName = "$feedType.xml";
+	if (!($feedType =~ /standard/)) {
 		$extension = "mpinstall.$extension";
 		$feedPath = 'feed-mpt';
 		$outgoingFileName = "mpinstall$nameSupplement.xml";
+	print "Outgoing Filename is mpinstall:$outgoingFileName\n";
 	}
+	print "Outgoing Filename is:$outgoingFileName\n";
 	$feedPath .= $nameSupplement;
 	my $tarFilePath = "$tarFilePathBase.$extension";
 	# Get the current build's tar file Size in MB
@@ -121,10 +129,10 @@ foreach my $feedType (@feedTypes) {
 		$sparkleHash = `ruby "$signingScriptPath" "$tarFilePath" "$privateKeyPath"`;
 		$sparkleHash =~ s/^\s+|\s+$//g;
 	}
-
-	my $feedContent = <<APPCAST;
-<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"  xmlns:dc="http://purl.org/dc/elements/1.1/">
-    <mpm>
+	
+	my $mpm_content = '';
+	if ($productCode ne "mpm") {
+		$mpm_content = "<mpm>
         <CFBundleIdentifier>com.smallcubed.$productName</CFBundleIdentifier>
         <CFBundleName>$productName</CFBundleName>
         <MPCProductDescription>$mpmDescription</MPCProductDescription>
@@ -136,7 +144,12 @@ foreach my $feedType (@feedTypes) {
         <MPCProductIconFileURL>$imageCDN/$logoName</MPCProductIconFileURL>
         <MPCProductDirectInstall>true</MPCProductDirectInstall>
         <MPCProductPrice>$price</MPCProductPrice>
-    </mpm>
+    </mpm>";		
+	}
+
+	my $feedContent = <<APPCAST;
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"  xmlns:dc="http://purl.org/dc/elements/1.1/">
+	$mpm_content
 	<channel>
 		<title>$productName $ENV{"BUILD_TYPE"} App Cast</title>
 		<link>https://$machine/$feedPath/$productCode</link>
