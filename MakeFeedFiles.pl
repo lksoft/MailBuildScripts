@@ -96,7 +96,7 @@ die "The Private key for the Sparkle signature is not available.\nPath: $private
 my $tempFeedsFolder = $ENV{"TEMP_FEEDS_FOLDER"};
 if ( -e "$tempFeedsFolder" ) {
 	print "Should be emptying files from:$tempFeedsFolder\n";
-	unlink glob "$tempFeedsFolder/*";
+	unlink <"$tempFeedsFolder/*">;
 }
 else {
 	print "Creating folder: $tempFeedsFolder\n";
