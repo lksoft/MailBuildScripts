@@ -23,7 +23,7 @@ if ($ENV{"BUILD_TYPE"} eq "BETA") {
 my $gitCommand = "/usr/local/bin/git";
 my $repoDirectory = $ENV{"SRCROOT"};
 
-my $versionFileContents = "";
+my $change_list = "";
 my $previousAndCurrentTags = `cd "$repoDirectory";$gitCommand describe --tags \`cd "$repoDirectory";$gitCommand rev-list --tags --abbrev=0 --max-count=2\` --abbrev=0`;
 (my $previousTag = $previousAndCurrentTags) =~ s/^.+\n(.+)\s+/$1/g;
 (my $currentTag = $previousAndCurrentTags) =~ s/^(.+)\n(.+)\s+/$1/g;
@@ -48,7 +48,7 @@ foreach my $aLine (split /\n/, $commitHistory) {
 			}
 			$counter++;
 		}
-		$versionFileContents .= $startLine . '{"type":"' . lc($values[0]) . '","description":"' . $cleanedLine . '"}';
+		$change_list .= $startLine . '{"type":"' . lc($values[0]) . '","description":"' . $cleanedLine . '"}';
 		$startLine = ",";
 	}
 }
@@ -65,5 +65,7 @@ if ( -f "$supInfoPath" ) {
 	};
 	$supplementalInfoText =~ s/\n//g;
 };
-
-print '{"changes":['. $versionFileContents .'], "info":"'. $supplementalInfoText .'"}';
+if ($change_list ne '') {
+	$change_list = '"changes":['. $change_list .'], ';
+}
+print '{'. $change_list .'"info":"'. $supplementalInfoText .'"}';
