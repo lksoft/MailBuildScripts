@@ -54,7 +54,10 @@ foreach my $aLine (split /\n/, $commitHistory) {
 }
 
 # Get the contents of the warning or info into a variable
-my $supInfoPath = $ENV{"SUPPLEMENTAL_VERSION_INFO_PATH"};
+my $supInfoPath = '/invalidpath';
+if ($ENV{"SUPPLEMENTAL_VERSION_INFO_PATH"}) {
+	$supInfoPath = $ENV{"SUPPLEMENTAL_VERSION_INFO_PATH"};
+}
 my $supplementalInfoText = "";
 if ( -f "$supInfoPath" ) {
 	$supplementalInfoText = do {
