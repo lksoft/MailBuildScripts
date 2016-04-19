@@ -41,8 +41,7 @@ $gitCommit =~ s/\s+$//;
 
 my $dmgURL = "https://sw.amazonaws.com.dl.smallcubed.com/$productCode/$compactProductName.$versionString.dmg";
 
-my $changeContents = ' ';
-$changeContents .= `"$dirname/ReleaseNotesAsHTML.pl" "$productCode" "$versionString" "$sitePath" "$ENV{SUPPLEMENTAL_VERSION_INFO_PATH}"`;
+my $changeContents = `"$dirname/ReleaseNotesAsJSON.pl"`;
 
 my %release;
 $release{'product'} = $productName;
@@ -54,9 +53,10 @@ $release{'commit'} = $gitCommit;
 $release{'branch'} = $gitBranch;
 $release{'min_os'} = $minOS;
 $release{'file_name'} = "$compactProductName.$versionString.dmg";
-$release{'notes'} = $changeContents;
-my $releaseJSON = encode_json(\%release);
-$releaseJSON = uri_escape_utf8($releaseJSON);
+$release{'release_json'} = $changeContents;
+my $json_package = encode_json(\%release);
+$json_package = uri_escape_utf8($json_package);
 
-my $result = `curl -s -X "POST" "$uploadBuildInfoURL" -H "Content-Type: application/json" -d "$releaseJSON"`;
+my $result = `curl -s -L -X "POST" "$uploadBuildInfoURL" -H "Content-Type: application/json" -d "$json_package"`;
+
 print $result;
