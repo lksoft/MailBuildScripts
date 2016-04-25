@@ -27,7 +27,7 @@ else {	#	For Command Line Testing purposes only!
 	$productCode = $ARGV[0];
 	$versionString = $ARGV[1];
 	$productName = "Tealeaves";
-	if ($productCode eq "sigpro") {
+	if ($productCode eq "sp") {
 		$productName = "SignatureProfiler";
 	}
 	if ($productCode eq "mpm") {
@@ -48,8 +48,8 @@ if ($argCount > $argParseStart) {
 
 #	Test for valid productCode
 my %accountNames = (
-	"sis" => "TealeavesMail",
-	"sigpro" => "sigprofiler",
+	"tlv" => "TealeavesMail",
+	"sp" => "sigprofiler",
 	"badtest" => "notthere"
 );
 my @validCodes = keys %accountNames;
@@ -58,7 +58,7 @@ if (!($productCode ~~ @validCodes)) {
 	exit 0;
 }
 
-my $sitePath = "/Users/scott/Sites/lksite/";
+my $sitePath = "$ENV{PRODUCT_SITE_PATH}";
 my $accountName = $accountNames{$productCode};
 my $twurlCommand = "cd $sitePath;source ~/.bash_profile;twurl";
 
@@ -70,7 +70,7 @@ if ($accountInfo !~ m/$accountName/) {
 }
 
 #	See if there is a relevant blog post
-my $postDir = "/Users/scott/Sites/lksite/source/_posts/";
+my $postDir = "$sitePath/_posts/";
 (my $mappedVersion = $versionString) =~ s/\./-/g;
 if (opendir(DIR, $postDir)) {
 	while (defined(my $aFile = readdir(DIR))) {

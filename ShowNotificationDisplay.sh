@@ -6,6 +6,7 @@
 #  Created by Scott Little on 6/3/2014.
 #  Copyright (c) 2014 Little Known Software. All rights reserved.
 
+
 MY_APP_DIR="${LOCAL_APPS_DIR}"
 if [[ -d "${LOCAL_APPS_DIR}/Non-Store" ]]; then
 	MY_APP_DIR="${LOCAL_APPS_DIR}/Non-Store"

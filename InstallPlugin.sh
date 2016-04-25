@@ -10,7 +10,7 @@
 #	but only if it is a development build
 
 PUB_DIR="$HOME/Dropbox/MailBundles"
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPT_DIR=$( dirname "${BASH_SOURCE[0]}" )
 
 FULL_PRODUCT="$PRODUCT_NAME.$WRAPPER_EXTENSION"
 SOURCE_PATH="$BUILT_PRODUCTS_DIR/$FULL_PRODUCT"

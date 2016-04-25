@@ -16,7 +16,7 @@ export MY_INSTALLER_FILE="Install $REAL_PRODUCT.mpinstall"
 export MY_MPINSTALLER_FILE="$REAL_PRODUCT.mpinstall"
 #export MY_UNINSTALLER="Uninstall $REAL_PRODUCT"
 #export MY_UNINSTALLER_FILE="Uninstall $REAL_PRODUCT.mpremove"
-export MY_RELEASE_FOLDER="$SRCROOT/../Releases"
+export MY_RELEASE_FOLDER="$RELEASE_FOLDER"
 export MY_PREP_DIR="$MY_RELEASE_FOLDER/$REAL_PRODUCT"
 
 # Ensure that the installation directory exists, if not use without the REAL_PRODUCT name

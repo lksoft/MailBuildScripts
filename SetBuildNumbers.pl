@@ -13,10 +13,10 @@ die "$0: Must be run from Xcode" unless $ENV{"BUILT_PRODUCTS_DIR"};
 # Get the current git branch and sha hash
 # 	to use them to set the CFBundleVersion value
 my $gitCommand = "/usr/local/bin/git";
-my $BRANCH=`$gitCommand symbolic-ref --short -q HEAD`;
-my $SHAHASH=`$gitCommand rev-parse --short HEAD`;
-my $GIT_VERSION = `$gitCommand log --pretty=format:'' | wc -l | sed 's/[ \t]//g'`;
-my $INFO = "$ENV{BUILT_PRODUCTS_DIR}/$ENV{INFOPLIST_PATH}";
+my $branch=`$gitCommand symbolic-ref --short -q HEAD`;
+my $commitH=`$gitCommand rev-parse --short HEAD`;
+my $buildNumber = `$gitCommand log --pretty=format:'' | wc -l | sed 's/[ \t]//g'`;
+my $infoPlistPath = "$ENV{BUILT_PRODUCTS_DIR}/$ENV{INFOPLIST_PATH}";
 
 my $baseDir = ".";
 if ($ENV{"SRCROOT"}) {
@@ -25,30 +25,39 @@ if ($ENV{"SRCROOT"}) {
 my $NEW_VERSION = `cat "$ENV{TEMP_VERSION_STRING_PATH}"`;
 
 # trim the ends
-$BRANCH =~ s/\s+$//;
-$SHAHASH =~ s/\s+$//;
-$GIT_VERSION =~ s/^\s+//;
-$GIT_VERSION =~ s/\s+$//;
+$branch =~ s/\s+$//;
+$commitH =~ s/\s+$//;
+$buildNumber =~ s/^\s+//;
+$buildNumber =~ s/\s+$//;
 
-if (!$BRANCH) {
-	$BRANCH = 'DETACHED_HEAD';
+my $buildNumberPath = "$ENV{SRCROOT}/buildNumber.txt";
+if (-e "$buildNumberPath") {
+	my $deleted = `rm "$buildNumberPath"`;
+}
+open my $fileHandle, ">", "$buildNumberPath" or die "touch $buildNumberPath: $!\n"; 
+	print $fileHandle "$buildNumber";
+close $fileHandle;
+
+
+if (!$branch) {
+	$branch = 'DETACHED_HEAD';
 }
 
-die "$0: No git branch found" unless $BRANCH;
+die "$0: No git branch found" unless $branch;
 
 # Get the contents as an XML format
-my $info = `plutil -convert xml1 -o - "$INFO"`;
+my $info = `plutil -convert xml1 -o - "$infoPlistPath"`;
 
 # replace both the branch name and the hash value
-$info =~ s/\[BRANCH\]/$BRANCH/;
-$info =~ s/\[SHA-HASH\]/$SHAHASH/;
-$info =~ s/\[GIT-BUILD-COUNT\]/$GIT_VERSION/;
+$info =~ s/\[BRANCH\]/$branch/;
+$info =~ s/\[SHA-HASH\]/$commitH/;
+$info =~ s/\[GIT-BUILD-COUNT\]/$buildNumber/;
 $info =~ s/\[VERSION-WITH-BETA\]/$NEW_VERSION/;
 
 # Rewrite the contents to the file
-open(FH, ">$INFO") or die "$0: $INFO: $!";
+open(FH, ">$infoPlistPath") or die "$0: $infoPlistPath: $!";
 print FH $info;
 close(FH);
 
 # Rest the contents of the file to the binary version
-`plutil -convert binary1 "$INFO"`;
+`plutil -convert binary1 "$infoPlistPath"`;
