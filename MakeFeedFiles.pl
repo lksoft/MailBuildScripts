@@ -38,18 +38,15 @@ if ($ENV{"MIN_OS_VERSION"}) {
 
 # Set variables depending on build type
 my $machine = "smallcubed.com";
-my $subPath = 'release';
 my $nameSupplement = '';
 my @feedTypes = ('standard', 'mpinstall');
 if ($ENV{"BUILD_TYPE"} eq "BETA") {
 	@feedTypes = ('mpinstall-beta');
-	$subPath = 'beta';
 	$nameSupplement = '-beta';
 }
 elsif ($ENV{"BUILD_TYPE"} eq "TEST") {
 	@feedTypes = ('mpinstall-test');
 	$machine = "fstest.". $machine;
-	$subPath = 'bug';
 	$nameSupplement = '-test';
 }
 elsif ($ENV{"BUILD_TYPE"} ne "RELEASE") {
@@ -162,7 +159,7 @@ foreach my $feedType (@feedTypes) {
 				<title>Version $versionString</title>
 				<sparkle:releaseNotesLink xml:lang="en">https://$machine/change-info$nameSupplement/$productCode</sparkle:releaseNotesLink>
 				<pubDate>$releaseTime</pubDate>
-				<enclosure url="https://$secureHostPath/$subPath/$productCode/$productName.$versionString.$extension" sparkle:version="$buildNumber" sparkle:shortVersionString="$versionString" length="$tarFileSize" type="application/octet-stream" sparkle:dsaSignature="$sparkleHash"/>
+				<enclosure url="https://$secureHostPath/sparkle/$productCode/$productName.$versionString.$extension" sparkle:version="$buildNumber" sparkle:shortVersionString="$versionString" length="$tarFileSize" type="application/octet-stream" sparkle:dsaSignature="$sparkleHash"/>
 				<sparkle:minimumSystemVersion>$minOSVersion</sparkle:minimumSystemVersion>
 			</item>
 	</channel>
