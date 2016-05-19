@@ -10,6 +10,10 @@ use strict;
 use File::Basename;
 use JSON qw/decode_json/;
 
+unless (-d "$ENV{PRODUCT_SITE_PATH}") {
+	print "Cannot make the feed files because the site path is not available.";
+	exit(0);
+}
 
 my $dirName = dirname(__FILE__);
 my $productCode;
