@@ -9,7 +9,6 @@
 # run script to copy the built bundle into the Install directory
 #	but only if it is a development build
 
-PUB_DIR="$HOME/Dropbox/MailBundles"
 SCRIPT_DIR=$( dirname "${BASH_SOURCE[0]}" )
 
 FULL_PRODUCT="$PRODUCT_NAME.$WRAPPER_EXTENSION"
@@ -24,21 +23,6 @@ echo 'Copying plugin to Public directories...'
 
 PRE_EL_CAP_LIVE_ACCOUNT="$HOME/Library/Mail/V2/IMAP-scott@littleknownsoftware.com@secure.emailsrvr.com"
 POST_EL_CAP_LIVE_ACCOUNT="$HOME/Library/Mail/V3/IMAP-scott@littleknownsoftware.com@secure.emailsrvr.com"
-
-# Make sure that the Shared folders are there and we are on live machine
-if [[ -d "$PUB_DIR" && (( -d "$POST_EL_CAP_LIVE_ACCOUNT") || ( -d "$PRE_EL_CAP_LIVE_ACCOUNT")) ]]; then
-
-	echo "Copying tar file to $PUB_DIR"
-
-	cd "$BUILT_PRODUCTS_DIR"
-	
-	# delete any previous version
-	rm -Rf "$PUB_DIR/$PRODUCT_NAME.tar"
-
-	# copy the bundle
-	tar -cf "$PUB_DIR/$PRODUCT_NAME.tar" "$FULL_PRODUCT"
-
-fi
 
 if [ "$CONFIGURATION" == Release* ]; then
 	exit 0
