@@ -24,7 +24,6 @@ my $repoDirectory;
 my $minOSVersion = '';
 my $secureHostPath = 's3.amazonaws.com/media.smallcubed.com';
 my $imageCDN = 'https://s3.amazonaws.com/media.smallcubed.com';
-my $gitCommand = "/usr/local/bin/git";
 
 $productName = $ENV{"MAIN_PRODUCT_NAME"};
 if ($ENV{"COMPACT_PRODUCT_NAME"}) {
