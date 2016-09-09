@@ -24,8 +24,6 @@ my $baseDir = ".";
 if ($ENV{"SRCROOT"}) {
 	$baseDir = $ENV{"SRCROOT"};
 }
-# my $NEW_VERSION = $ENV{"VERSION_STRING"};
-my $NEW_VERSION = `cat "$ENV{TEMP_VERSION_STRING_PATH}"`;
 
 # trim the ends
 $branch =~ s/\s+$//;
@@ -41,15 +39,6 @@ my $buildNumber=`curl -s -X "POST" "https://smallcubed.com/build/number" -H "Con
 $buildNumber =~ s/^\s+//;
 $buildNumber =~ s/\s+$//;
 
-my $buildNumberPath = "$ENV{SRCROOT}/buildNumber.txt";
-if (-e "$buildNumberPath") {
-	my $deleted = `rm "$buildNumberPath"`;
-}
-open my $fileHandle, ">", "$buildNumberPath" or die "touch $buildNumberPath: $!\n"; 
-	print $fileHandle "$buildNumber";
-close $fileHandle;
-
-
 if (!$branch) {
 	$branch = 'DETACHED_HEAD';
 }
@@ -62,8 +51,8 @@ my $info = `plutil -convert xml1 -o - "$infoPlistPath"`;
 # replace both the branch name and the hash value
 $info =~ s/\[BRANCH\]/$branch/;
 $info =~ s/\[SHA-HASH\]/$commitH/;
-$info =~ s/\[GIT-BUILD-COUNT\]/$buildNumber/;
-$info =~ s/\[VERSION-WITH-BETA\]/$NEW_VERSION/;
+$info =~ s/\[VERSION-WITH-BUILD\]/$ENV{"VERSION_STRING"}b$buildNumber/;
+$info =~ s/\[VERSION-NUMBER\]/$ENV{"VERSION_STRING"}/;
 
 # Rewrite the contents to the file
 open(FH, ">$infoPlistPath") or die "$0: $infoPlistPath: $!";
