@@ -17,7 +17,6 @@ die "$0: Must be run from Xcode" unless $ENV{"BUILT_PRODUCTS_DIR"};
 my $gitCommand = "/usr/local/bin/git";
 my $branch=`$gitCommand symbolic-ref --short -q HEAD`;
 my $commitH=`$gitCommand rev-parse --short HEAD`;
-#my $buildNumber = `$gitCommand log --pretty=format:'' | wc -l | sed 's/[ \t]//g'`;
 my $infoPlistPath = "$ENV{BUILT_PRODUCTS_DIR}/$ENV{INFOPLIST_PATH}";
 
 my $baseDir = ".";
@@ -38,6 +37,20 @@ $json_package = uri_escape_utf8($json_package);
 my $buildNumber=`curl -s -X "POST" "https://smallcubed.com/build/number" -H "Content-Type: application/json; charset=utf-8" -d "$json_package"`;
 $buildNumber =~ s/^\s+//;
 $buildNumber =~ s/\s+$//;
+
+# If we didn't get a build number then use the last one
+my $buildNumberPath = "$ENV{SRCROOT}/buildNumber.txt";
+if ("$buildNumber" eq "") {
+	$buildNumber = `cat "$buildNumberPath"`;
+}
+else {
+	if (-e "$buildNumberPath") {
+		my $deleted = `rm "$buildNumberPath"`;
+	}
+	open my $fileHandle, ">", "$buildNumberPath" or die "touch $buildNumberPath: $!\n"; 
+		print $fileHandle "$buildNumber";
+	close $fileHandle;
+}
 
 if (!$branch) {
 	$branch = 'DETACHED_HEAD';
