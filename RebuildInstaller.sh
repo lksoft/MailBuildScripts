@@ -75,5 +75,5 @@ fi
 # Resign it
 cd "$MY_PREP_DIR"
 SetFile -a CBE "$MY_INSTALLER_APP"
-codesign -f -s "Developer ID" -v "$MY_INSTALLER_APP"
+codesign -s "Developer ID" --deep -f -v "$MY_INSTALLER_APP"
 
