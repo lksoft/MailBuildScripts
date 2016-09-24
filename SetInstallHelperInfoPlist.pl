@@ -4,10 +4,11 @@ use strict;
 
 die "$0: Must be run from Xcode" unless $ENV{"BUILT_PRODUCTS_DIR"};
 
-unless ($ENV{"CONFIGURATION"} eq "Debug") {
-	# Ensure that the proper values have been setup
-	die "No Codesign identity found" unless $ENV{"CODE_SIGN_IDENTITY"};
-}
+# unless ($ENV{"CONFIGURATION"} eq "Debug") {
+# 	# Ensure that the proper values have been setup
+# 	die "No Codesign identity found" unless $ENV{"CODE_SIGN_IDENTITY"};
+# }
+my $CODE_SIGN_ID = "Developer ID Application: Little Known Software, Inc.";
 
 # Get the current git branch and sha hash
 # 	to use them to set the CFBundleVersion value
@@ -23,7 +24,7 @@ $GIT_VERSION =~ s/\s+$//;
 my $info = `plutil -convert xml1 -o - "$INFO_SOURCE"`;
 
 # Always update the test client authorization
-my $testClient = "<string>identifier com.littleknownsoftware.MPI.REPLACESUBID and certificate leaf[subject.CN] = &quot;CODESIGNID&quot;</string>";
+my $testClient = "<string>identifier com.littleknownsoftware.MPI.REPLACESUBID and certificate leaf[subject.CN] = &quot;$CODE_SIGN_ID&quot;</string>";
 unless ($ENV{"CONFIGURATION"} eq "DebugDevIDOwner") {
 	$testClient = "";
 }
@@ -31,7 +32,7 @@ $info =~ s/<string>\[TEST_AUTH_CLIENT\]<\/string>/$testClient/g;
 
 unless ($ENV{"CONFIGURATION"} eq "Debug") {
 	# replace both the branch name and the hash value
-	$info =~ s/CODESIGNID/$ENV{"CODE_SIGN_IDENTITY"}/g;
+	$info =~ s/CODESIGNID/$CODE_SIGN_ID/g;
 	$info =~ s/\[GIT-BUILD-COUNT\]/$GIT_VERSION/g;
 
 }
