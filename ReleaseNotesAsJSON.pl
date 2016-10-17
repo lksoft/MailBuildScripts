@@ -21,6 +21,7 @@ if ($ENV{"BUILD_TYPE"} eq "BETA") {
 # Get the current build's tar file Size in MB
 # 	to use them to set the CFBundleVersion value
 my $gitCommand = "/usr/local/bin/git";
+$gitCommand = "git";
 my $repoDirectory = $ENV{"SRCROOT"};
 
 my $change_list = "";
