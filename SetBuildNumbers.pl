@@ -12,7 +12,7 @@ die "$0: Must be run from Xcode" unless $ENV{"BUILT_PRODUCTS_DIR"};
 
 # Get the current git branch and sha hash
 # 	to use them to set the CFBundleVersion value
-my $gitCommand = "/usr/local/bin/git";
+my $gitCommand = "git";
 my $branch=`$gitCommand symbolic-ref --short -q HEAD`;
 my $commitH=`$gitCommand rev-parse --short HEAD`;
 my $buildNumber = `$gitCommand log --pretty=format:'' | wc -l | sed 's/[ \t]//g'`;

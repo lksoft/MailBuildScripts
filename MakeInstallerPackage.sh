@@ -56,8 +56,9 @@ cp "$MY_SOURCE_INSTALLATION_DIR/background-image.png" "$MY_INSTALLER_FILE/backgr
 echo "Setting installer Icon and flags"
 
 #   then set the icon for the installer and hide the extension
+SCRIPT_DIR=$( dirname "${BASH_SOURCE[0]}" )
 SetFile -a C "$MY_INSTALLER_FILE"
-/usr/local/bin/seticon -d "$MY_SOURCE_INSTALLATION_DIR/installer.icns" "$MY_INSTALLER_FILE"
+$SCRIPT_DIR/seticon -d "$MY_SOURCE_INSTALLATION_DIR/installer.icns" "$MY_INSTALLER_FILE"
 SetFile -a BE "$MY_INSTALLER_FILE"
 
 

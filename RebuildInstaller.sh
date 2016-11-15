@@ -72,8 +72,11 @@ else
 	echo "No other delivery items found"
 fi
 
-# Resign it
 cd "$MY_PREP_DIR"
+
+# Resign it
 SetFile -a CBE "$MY_INSTALLER_APP"
+# Ensure all Finder Attributes are cleared
+xattr -cr "$MY_INSTALLER_APP"
 codesign -s "Developer ID" --deep -f -v "$MY_INSTALLER_APP"
 
