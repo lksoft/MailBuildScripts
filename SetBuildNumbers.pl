@@ -7,6 +7,8 @@
 #  Copyright (c) 2013 Little Known Software. All rights reserved.
 
 use strict;
+use JSON qw/encode_json/;
+use URI::Escape;
 
 die "$0: Must be run from Xcode" unless $ENV{"BUILT_PRODUCTS_DIR"};
 
@@ -15,7 +17,6 @@ die "$0: Must be run from Xcode" unless $ENV{"BUILT_PRODUCTS_DIR"};
 my $gitCommand = "git";
 my $branch=`$gitCommand symbolic-ref --short -q HEAD`;
 my $commitH=`$gitCommand rev-parse --short HEAD`;
-my $buildNumber = `$gitCommand log --pretty=format:'' | wc -l | sed 's/[ \t]//g'`;
 my $infoPlistPath = "$ENV{BUILT_PRODUCTS_DIR}/$ENV{INFOPLIST_PATH}";
 
 my $baseDir = ".";
@@ -27,8 +28,17 @@ my $NEW_VERSION = `cat "$ENV{TEMP_VERSION_STRING_PATH}"`;
 # trim the ends
 $branch =~ s/\s+$//;
 $commitH =~ s/\s+$//;
+
+my %buildInfo;
+$buildInfo{'product_code'} = $ENV{"PRODUCT_CODE"};
+$buildInfo{'branch'} = "$branch";
+$buildInfo{'commit'} = "$commitH";
+my $json_package = encode_json(\%buildInfo);
+$json_package = uri_escape_utf8($json_package);
+my $buildNumber=`curl -s -X "POST" "https://smallcubed.com/build/number" -H "Content-Type: application/json; charset=utf-8" -d "$json_package"`;
 $buildNumber =~ s/^\s+//;
 $buildNumber =~ s/\s+$//;
+
 
 my $buildNumberPath = "$ENV{SRCROOT}/buildNumber.txt";
 if (-e "$buildNumberPath") {
