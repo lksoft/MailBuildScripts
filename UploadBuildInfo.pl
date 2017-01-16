@@ -30,7 +30,7 @@ my $minOS = $ENV{"MIN_OS_VERSION"};
 
 # Get the current git branch and sha hash
 # 	to use them to set the CFBundleVersion value
-my $gitCommand = "/usr/local/bin/git";
+my $gitCommand = "git";
 my $gitBranch=`$gitCommand symbolic-ref --short -q HEAD`;
 my $gitCommit=`$gitCommand rev-parse --short HEAD`;
 
