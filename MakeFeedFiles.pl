@@ -19,6 +19,7 @@ my $dirName = dirname(__FILE__);
 my $productCode;
 my $productName;
 my $versionString;
+my $shortVersion;
 my $extraReleasePathValue = '';
 my $repoDirectory;
 my $minOSVersion = '';
@@ -34,6 +35,8 @@ $versionString = `cat "$ENV{TEMP_VERSION_STRING_PATH}"`;
 if ($ENV{"EXTRA_RELEASE_PATH"}) {
 	$extraReleasePathValue = $ENV{"EXTRA_RELEASE_PATH"};
 }
+my @splitVersion = split('b', $versionString);
+$shortVersion = $splitVersion[0];
 $repoDirectory = $ENV{"SRCROOT"};
 if ($ENV{"MIN_OS_VERSION"}) {
 	$minOSVersion = $ENV{"MIN_OS_VERSION"};
@@ -162,7 +165,12 @@ foreach my $feedType (@feedTypes) {
 				<title>Version $versionString</title>
 				<sparkle:releaseNotesLink xml:lang="en">https://$machine/change-info$nameSupplement/$productCode</sparkle:releaseNotesLink>
 				<pubDate>$releaseTime</pubDate>
-				<enclosure url="https://$secureHostPath/sparkle/$productCode/$productName.$versionString.$extension" sparkle:version="$buildNumber" sparkle:shortVersionString="$versionString" length="$tarFileSize" type="application/octet-stream" sparkle:dsaSignature="$sparkleHash"/>
+				<enclosure url="https://$secureHostPath/sparkle/$productCode/$productName.$versionString.$extension"
+					sparkle:version="$versionString"
+					sparkle:shortVersionString="$shortVersion"
+					length="$tarFileSize"
+					type="application/octet-stream"
+					sparkle:dsaSignature="$sparkleHash"/>
 				<sparkle:minimumSystemVersion>$minOSVersion</sparkle:minimumSystemVersion>
 			</item>
 	</channel>
