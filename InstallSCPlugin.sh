@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  InstallPlugin.sh
+#  InstallSCPlugin.sh
 #  Tealeaves
 #
 #  Created by Scott Little on 4/6/13.
@@ -26,7 +26,7 @@ if [ "$CONFIGURATION" == Release* ]; then
 fi
 
 echo 'Deleting any old copy of plugin...'
-DEST_PATH="$HOME/Library/Mail/Bundles/$FULL_PRODUCT"
+DEST_PATH="$HOME/Library/Mail/SmallCubed/Bundles/$FULL_PRODUCT"
 
 # delete any previous version
 rm -Rf "$DEST_PATH"
