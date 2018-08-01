@@ -19,8 +19,6 @@ if [ ! -d "$SOURCE_PATH" ]; then
 	exit 0
 fi
 
-echo 'Copying plugin to Public directories...'
-
 if [ "$CONFIGURATION" == Release* ]; then
 	exit 0
 fi
