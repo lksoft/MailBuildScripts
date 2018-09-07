@@ -23,8 +23,15 @@ if [ "$CONFIGURATION" == Release* ]; then
 	exit 0
 fi
 
+DEST_FOLDER="$HOME/Library/Mail/SmallCubed/Bundles"
+
+if [ ! -d "$DEST_FOLDER" ]; then
+	echo "Creating Bundle Folder: ${DEST_FOLDER}"
+	mkdir "$DEST_FOLDER"
+fi
+
 echo 'Deleting any old copy of plugin...'
-DEST_PATH="$HOME/Library/Mail/SmallCubed/Bundles/$FULL_PRODUCT"
+DEST_PATH="$DEST_FOLDER/$FULL_PRODUCT"
 
 # delete any previous version
 rm -Rf "$DEST_PATH"
