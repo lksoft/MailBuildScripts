@@ -23,7 +23,7 @@ if [ "$CONFIGURATION" == Release* ]; then
 	exit 0
 fi
 
-DEST_FOLDER="$HOME/Library/Mail/SmallCubed/Bundles"
+DEST_FOLDER="$HOME/Library/Mail/SmallCubed/Components"
 
 if [ ! -d "$DEST_FOLDER" ]; then
 	echo "Creating Bundle Folder: ${DEST_FOLDER}"
