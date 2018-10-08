@@ -63,10 +63,10 @@ die "$0: No git branch found" unless $branch;
 my $info = `plutil -convert xml1 -o - "$infoPlistPath"`;
 
 # replace both the branch name and the hash value
-$info =~ s/\[BRANCH\]/$branch/;
-$info =~ s/\[SHA-HASH\]/$commitH/;
-$info =~ s/\[VERSION-WITH-BUILD\]/$ENV{"VERSION_STRING"}b$buildNumber/;
-$info =~ s/\[VERSION-NUMBER\]/$ENV{"VERSION_STRING"}/;
+$info =~ s/\[BRANCH\]/$branch/g;
+$info =~ s/\[SHA-HASH\]/$commitH/g;
+$info =~ s/\[VERSION-WITH-BUILD\]/$ENV{"VERSION_STRING"}b$buildNumber/g;
+$info =~ s/\[VERSION-NUMBER\]/$ENV{"VERSION_STRING"}/g;
 
 # Rewrite the contents to the file
 open(FH, ">$infoPlistPath") or die "$0: $infoPlistPath: $!";
