@@ -43,3 +43,24 @@ echo 'Copying just built plugin...'
 
 # copy the bundle
 cp -Rf "$SOURCE_PATH" "$DEST_PATH"
+
+
+# see if we can install in DataVault
+VAULT_FOLDER="${HOME}/Library/Containers/com.apple.mail/Data/DataVaults/MailBundles${DEST_FOLDER}"
+DEST_PATH="${VAULT_FOLDER}/${FULL_PRODUCT}"
+
+echo "Testing for DataVault folder at ${VAULT_FOLDER}"
+
+if [ -d "${VAULT_FOLDER}" ]; then
+
+	echo 'Deleting DataVault copy of plugin...'
+
+	# delete any previous version
+	rm -Rf "${DEST_PATH}"
+
+	echo 'Copying just built plugin into Vault...'
+
+	# copy the bundle
+	cp -Rf "${SOURCE_PATH}" "${DEST_PATH}"
+
+fi
