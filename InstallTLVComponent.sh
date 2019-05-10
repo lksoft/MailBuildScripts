@@ -11,32 +11,35 @@
 
 SCRIPT_DIR=$( dirname "${BASH_SOURCE[0]}" )
 
-FULL_PRODUCT="$PRODUCT_NAME.$WRAPPER_EXTENSION"
-SOURCE_PATH="$BUILT_PRODUCTS_DIR/$FULL_PRODUCT"
+FULL_PRODUCT="${PRODUCT_NAME}.${WRAPPER_EXTENSION}"
+SOURCE_PATH="${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT}"
 
-if [ ! -d "$SOURCE_PATH" ]; then
+if [ ! -d "${SOURCE_PATH}" ]; then
 	echo "No component to install"
 	exit 0
 fi
 
-if [ "$CONFIGURATION" == Release* ]; then
+if [ "${CONFIGURATION}" == Release* ]; then
 	exit 0
 fi
 
-DEST_FOLDER="$HOME/Library/Mail/SmallCubed/Tealeaves/Components"
+DEST_FOLDER="${HOME}/Library/Mail/SmallCubed/Tealeaves/Components"
 
-if [ ! -d "$DEST_FOLDER" ]; then
+if [ ! -d "${DEST_FOLDER}" ]; then
 	echo "Creating Component Folder: ${DEST_FOLDER}"
-	mkdir -p "$DEST_FOLDER"
+	mkdir -p "${DEST_FOLDER}"
 fi
 
 echo 'Deleting any old copy of component...'
-DEST_PATH="$DEST_FOLDER/$FULL_PRODUCT"
+DEST_PATH="${DEST_FOLDER}/${FULL_PRODUCT}"
+
+ls -l ~
+ls -l "${DEST_PATH}"
 
 # delete any previous version
-rm -Rf "$DEST_PATH"
+rm -Rf "${DEST_PATH}"
 
-echo 'Copying just built component...'
+echo "Copying just built component from “${SOURCE_PATH}” ..."
 
 # copy the bundle
-cp -Rf "$SOURCE_PATH" "$DEST_PATH"
+cp -Rf "${SOURCE_PATH}" "${DEST_PATH}"
